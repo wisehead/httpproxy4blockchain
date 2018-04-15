@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"flag"
 	"html/template"
+	"httpproxy4blockchain/handler"
 	"httpproxy4blockchain/jsonrpc"
 	"log"
 	"net/http"
@@ -44,6 +45,7 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	log.Printf("rpcRequest.Params.Key:%v\n", key)
 	channel := f.(map[string]interface{})["channel"].(string)
 	log.Printf("rpcRequest.Params.Channel:%v\n", channel)
+	handler.Excute(postdata)
 
 	err = c.WriteMessage(messageType, postdata)
 	if err != nil {
