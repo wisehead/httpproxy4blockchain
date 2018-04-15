@@ -36,7 +36,7 @@ type Timestamp struct {
 }
 
 //ResultTransaction is the struct of result of source-transactions message.
-type ResultTransaction struct {
+type ResultTransactions struct {
 	Timestamp Timestamp `json:"timestamp"`
 	Tx_id     string    `json:"tx_id"`
 	Value     string    `json:"value"`
@@ -59,13 +59,58 @@ type ResultTransaction struct {
 }
 */
 //RPCResponseState is the strunct for source-state message response.
-type RPCResponseTransaction struct {
-	JSONRPC string              `json:"jsonrpc"`
-	Result  []ResultTransaction `json:"result,omitempty"`
+type RPCResponseTransactions struct {
+	JSONRPC string               `json:"jsonrpc"`
+	Result  []ResultTransactions `json:"result,omitempty"`
 	//Result map[string]interface{} `json:"result,omitempty"`
 	//Result *json.RawMessage `json:"result,omitempty"`
 	Error *RPCError `json:"error,omitempty"`
 	ID    uint      `json:"id"`
+}
+
+/*
+{
+    "jsonrpc": "2.0",
+    "id": 0,
+    "result": {
+        "channel_id": "vvtrip",
+        "data": [
+            {
+                "write": {
+                    "is_delete": false,
+                    "key": "mytest/1",
+                    "value": "value1"
+                }
+            }
+        ],
+        "timestamp": "Sun Apr 15 2018 04:55:03 GMT+0000 (UTC)",
+        "tx_id": "b11a94dd1142559380d1a715da39b6899ed55511f7e23164a50159e4dad4f936",
+        "type": "ENDORSER_TRANSACTION"
+    }
+}*/
+type RPCResponseTransaction struct {
+	JSONRPC string            `json:"jsonrpc"`
+	Result  ResultTransaction `json:"result,omitempty"`
+	//Result map[string]interface{} `json:"result,omitempty"`
+	//Result *json.RawMessage `json:"result,omitempty"`
+	Error *RPCError `json:"error,omitempty"`
+	ID    uint      `json:"id"`
+}
+
+type ResultTransaction struct {
+	Channel_id string    `json:"channel_id"`
+	Data       DataItem  `json:"data"`
+	Timestamp  Timestamp `json:"timestamp"`
+	Tx_id      string    `json:"tx_id"`
+	Type       string    `json:"type"`
+}
+type DataItem struct {
+	Write WriteData `json:"write"`
+}
+type WriteData struct {
+	Is_delete bool   `json:"is_delete"`
+	Key       string `json:"key"`
+	Value     string `json:"value"`
 }
 
 // RPCError represents a JSON-RPC error object if an RPC error occurred.
@@ -87,6 +132,7 @@ type RPCError struct {
 type MethodParams struct {
 	Channel string `json:"channel"`
 	Key     string `json:"key"`
+	Tx_id   string `json:"tx_id"`
 }
 
 //Msg defined between app client and goproxy4blockchain
@@ -108,7 +154,7 @@ type Controller interface {
 }
 
 //sendJsonrpcRequest is to send request to block chain service.
-func sendJsonrpcRequest(method string, key string) (*jsonrpc.RPCResponse, error) {
+func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCResponse, error) {
 	var err error
 	//rpcClient := jsonrpc.NewClient("http://my-rpc-service:8080/rpc")
 	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
@@ -116,7 +162,14 @@ func sendJsonrpcRequest(method string, key string) (*jsonrpc.RPCResponse, error)
 		log.Println("rxxx sendJsonrpcRequest() pcClient is nil!")
 		return nil, err
 	}
-	rpcResp, err := rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key})
+
+	var rpcResp *jsonrpc.RPCResponse
+	if method == "source-transaction" {
+		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key, Tx_id: tx_id})
+	} else {
+		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key})
+	}
+
 	if err != nil {
 		log.Println("xxx err for rpcClient.Call:", err.Error())
 		return nil, err
@@ -168,19 +221,86 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 	log.Println("xxx verifyTransactionMsg() rpcRespTx.id:", id)
 	jsonrpc := rpcRespTx.JSONRPC
 	log.Println("xxx verifyTransactionMsg() rpcRespTx.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespTx.Result
+	/*
+				type ResultTransaction struct {
+					Channel_id string    `json:"channel_id"`
+					Data       string    `json:"data"`
+					Timestamp  Timestamp `json:"timestamp"`
+					Tx_id      string    `json:"tx_id"`
+					Type       string    `json:"type"`
+				}
+		type DataItem struct {
+			Write WriteData `json:"write"`
+		}
+		type WriteData struct {
+			Is_delete bool   `json:"is_delete"`
+			Key       string `json:"key"`
+			Value     string `json:"value"`
+		}
+	*/
+	channel_id := rpcresult.Channel_id
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.channel_id:", channel_id)
+	timestamp := rpcresult.Timestamp
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.timestamp:", timestamp)
+	tx_id := rpcresult.Tx_id
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.tx_id:", tx_id)
+	resulttype := rpcresult.Type
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.resulttype:", resulttype)
+	data := rpcresult.Data
+	write := data.Write
+	is_delete := write.Is_delete
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.is_delete:", is_delete)
+	key := write.Key
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.key:", key)
+	value := write.Value
+	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.value:", value)
+
+	/*
+		for i := range rpcresults {
+			//表示遍历数组，而i表示的是数组的下标值，
+			//result[i]表示获得第i个json对象即JSONObject
+			//result[i]通过.字段名称即可获得指定字段的值
+			tx_id := rpcresults[i].Tx_id
+			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Tx_id:", tx_id)
+			value := rpcresults[i].Value
+			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Value:", value)
+			timestamp := rpcresults[i].Timestamp
+			nanos := timestamp.Nanos
+			seconds := timestamp.Seconds
+			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
+		}
+	*/
+	return true, nil
+}
+
+//verifyTransactionMsg is to parse and verify the format of source-state message.
+func verifyTransactionsMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
+
+	mirrormsg, err := json.Marshal(rpcResp)
+	utils.CheckError(err)
+	log.Println("xxx verifyTransactionMsgs() mirrormsg:", string(mirrormsg))
+
+	var rpcRespTx = new(RPCResponseTransactions)
+	json.Unmarshal(mirrormsg, &rpcRespTx)
+
+	id := rpcRespTx.ID
+	log.Println("xxx verifyTransactionMsgs() rpcRespTx.id:", id)
+	jsonrpc := rpcRespTx.JSONRPC
+	log.Println("xxx verifyTransactionMsgs() rpcRespTx.jsonrpc:", jsonrpc)
 	rpcresults := rpcRespTx.Result
 	for i := range rpcresults {
 		//表示遍历数组，而i表示的是数组的下标值，
 		//result[i]表示获得第i个json对象即JSONObject
 		//result[i]通过.字段名称即可获得指定字段的值
 		tx_id := rpcresults[i].Tx_id
-		log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Tx_id:", tx_id)
+		log.Println("xxx verifyTransactionsMsg() rpcRespTx.Result.Tx_id:", tx_id)
 		value := rpcresults[i].Value
-		log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Value:", value)
+		log.Println("xxx verifyTransactionsMsg() rpcRespTx.Result.Value:", value)
 		timestamp := rpcresults[i].Timestamp
 		nanos := timestamp.Nanos
 		seconds := timestamp.Seconds
-		log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
+		log.Println("xxx verifyTransactionMsgs() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
 	}
 
 	return true, nil
@@ -191,7 +311,11 @@ func verifyMsg(method string, rpcResp *jsonrpc.RPCResponse) (bool, error) {
 		return verifyStateMsg(rpcResp)
 	} else {
 		if method == "source-transactions" {
-			return verifyTransactionMsg(rpcResp)
+			return verifyTransactionsMsg(rpcResp)
+		} else {
+			if method == "source-transaction" {
+				return verifyTransactionMsg(rpcResp)
+			}
 		}
 	}
 	return false, nil
@@ -223,8 +347,13 @@ func Excute(message []byte) []byte {
 	log.Println("rpcRequest.Params.Key:", key)
 	channel := f.(map[string]interface{})["channel"].(string)
 	log.Println("rpcRequest.Params.Channel:", channel)
+	var tx_id string
+	if method == "source-transaction" {
+		tx_id = f.(map[string]interface{})["tx_id"].(string)
+		log.Println("rpcRequest.Params.tx_id:", tx_id)
+	}
 
-	rpcResp, err := sendJsonrpcRequest(method, key)
+	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
 
 	isok, err := verifyMsg(method, rpcResp)
 	if isok {

@@ -68,10 +68,22 @@ func main() {
 			JSONRPC: "2.0",
 		}
 	*/
+	/*
+		request := &RPCRequest{
+			Method: "source-transactions",
+			Params: map[string]interface{}{
+				"key":     "mytest/1",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 	request := &RPCRequest{
-		Method: "source-transactions",
+		Method: "source-transaction",
 		Params: map[string]interface{}{
 			"key":     "mytest/1",
+			"tx_id":   "b11a94dd1142559380d1a715da39b6899ed55511f7e23164a50159e4dad4f936",
 			"channel": "vvtrip",
 		},
 		ID:      0,
