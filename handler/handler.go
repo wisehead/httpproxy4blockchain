@@ -108,7 +108,7 @@ type Controller interface {
 }
 
 //sendJsonrpcRequest is to send request to block chain service.
-func sendJsonrpcRequest(method string) (*jsonrpc.RPCResponse, error) {
+func sendJsonrpcRequest(method string, key string) (*jsonrpc.RPCResponse, error) {
 	var err error
 	//rpcClient := jsonrpc.NewClient("http://my-rpc-service:8080/rpc")
 	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
@@ -116,7 +116,7 @@ func sendJsonrpcRequest(method string) (*jsonrpc.RPCResponse, error) {
 		log.Println("rxxx sendJsonrpcRequest() pcClient is nil!")
 		return nil, err
 	}
-	rpcResp, err := rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: "mytest/1"})
+	rpcResp, err := rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key})
 	if err != nil {
 		log.Println("xxx err for rpcClient.Call:", err.Error())
 		return nil, err
@@ -217,14 +217,14 @@ func Excute(message []byte) []byte {
 	*/
 	method := rpcRequest.Method
 	log.Println("xxx Excute() parsing Method:", method)
-	/*
-		f := rpcRequest.Params
-		key := f.(map[string]interface{})["key"].(string)
-		Log("rpcRequest.Params.Key:", key)
-		channel := f.(map[string]interface{})["channel"].(string)
-		Log("rpcRequest.Params.Channel:", channel)
-	*/
-	rpcResp, err := sendJsonrpcRequest(method)
+
+	f := rpcRequest.Params
+	key := f.(map[string]interface{})["key"].(string)
+	log.Println("rpcRequest.Params.Key:", key)
+	channel := f.(map[string]interface{})["channel"].(string)
+	log.Println("rpcRequest.Params.Channel:", channel)
+
+	rpcResp, err := sendJsonrpcRequest(method, key)
 
 	isok, err := verifyMsg(method, rpcResp)
 	if isok {

@@ -57,8 +57,19 @@ func main() {
 			log.Printf("recv: %s", message)
 		}
 	}()
+	/*
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "mytest/1",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 	request := &RPCRequest{
-		Method: "source-state",
+		Method: "source-transactions",
 		Params: map[string]interface{}{
 			"key":     "mytest/1",
 			"channel": "vvtrip",

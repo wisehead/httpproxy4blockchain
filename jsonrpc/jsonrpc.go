@@ -3,6 +3,8 @@ package jsonrpc
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"goproxy4blockchain/utils"
@@ -211,21 +213,13 @@ func NewClientWithOpts(endpoint string, opts *RPCClientOpts) RPCClient {
 //--
 func (client *rpcClient) Call(method string, params ...interface{}) (*RPCResponse, error) {
 	/*
-		type BCRequest struct {
-			Alg   string     `json:"alg"`
-			Data  RPCRequest `json:"data,omitempty"`
-			Nonce string     `json:"nonce"` //chenhui
-			Sign  string     `json:"sign"`
-		}
-	*/
-	/*
 		md5{"params": {"channel": "vvtrip", "key": "mytest/1"}, "jsonrpc": "2.0", "id": 0, "method": "source-state"}
 	*/
 	rpcRequest := &RPCRequest{
 		Params:  transformParams(params...),
 		JSONRPC: "2.0",
 		ID:      0,
-		Method:  "source-state",
+		Method:  method,
 	}
 
 	body, err := json.Marshal(rpcRequest)
@@ -239,11 +233,20 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 	str := strconv.Quote(string(body))
 	fmt.Println("str:" + str)
 
+	data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540659"
+	log.Println("xxx Call() :data_orig is: ", data_orig)
+
+	h := md5.New()
+	h.Write([]byte(data_orig)) // 需要加密的字符串为 123456
+	cipherStr := h.Sum(nil)
+	//log.Println(cipherStr)
+	log.Printf("xxx Call() sign is:%s\n", hex.EncodeToString(cipherStr)) // 输出加密结果
+
 	bcRequest := &BCRequest{
 		Data:  string(body),
 		Nonce: "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l",
 		Alg:   "md5",
-		Sign:  "cde50c907aee65b705a60f387b166159",
+		Sign:  hex.EncodeToString(cipherStr),
 	}
 	/*
 		request := &RPCRequest{
