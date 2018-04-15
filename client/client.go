@@ -60,7 +60,7 @@ func main() {
 	request := &RPCRequest{
 		Method: "source-state",
 		Params: map[string]interface{}{
-			"key":     "00000000000000000000000000000001",
+			"key":     "mytest/1",
 			"channel": "vvtrip",
 		},
 		ID:      0,

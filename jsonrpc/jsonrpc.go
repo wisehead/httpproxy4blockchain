@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"goproxy4blockchain/utils"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -60,6 +61,13 @@ type RPCClient interface {
 	// to *RPCError.
 	//
 	CallFor(out interface{}, method string, params ...interface{}) error
+}
+
+type BCRequest struct {
+	Alg   string `json:"alg"`
+	Data  string `json:"data,omitempty"`
+	Nonce string `json:"nonce"` //chenhui
+	Sign  string `json:"sign"`
 }
 
 // RPCRequest represents a JSON-RPC request object.
@@ -192,15 +200,51 @@ func NewClientWithOpts(endpoint string, opts *RPCClientOpts) RPCClient {
 
 //--
 func (client *rpcClient) Call(method string, params ...interface{}) (*RPCResponse, error) {
-
-	request := &RPCRequest{
-		ID:      defaultID,
-		Method:  method,
+	/*
+		type BCRequest struct {
+			Alg   string     `json:"alg"`
+			Data  RPCRequest `json:"data,omitempty"`
+			Nonce string     `json:"nonce"` //chenhui
+			Sign  string     `json:"sign"`
+		}
+	*/
+	/*
+		md5{"params": {"channel": "vvtrip", "key": "mytest/1"}, "jsonrpc": "2.0", "id": 0, "method": "source-state"}
+	*/
+	rpcRequest := &RPCRequest{
 		Params:  transformParams(params...),
-		JSONRPC: jsonrpcVersion,
+		JSONRPC: "2.0",
+		ID:      0,
+		Method:  "source-state",
 	}
 
-	return client.doCall(request)
+	body, err := json.Marshal(rpcRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	//B_chenhui
+	log.Println("xxx Call() :rpcRequest is: ", string(body))
+
+	str := strconv.Quote(string(body))
+	fmt.Println("str:" + str)
+
+	bcRequest := &BCRequest{
+		Data:  string(body),
+		Nonce: "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l",
+		Alg:   "md5",
+		Sign:  "cde50c907aee65b705a60f387b166159",
+	}
+	/*
+		request := &RPCRequest{
+			ID:      defaultID,
+			Method:  method,
+			Params:  transformParams(params...),
+			JSONRPC: jsonrpcVersion,
+		}
+	*/
+
+	return client.doCall(bcRequest)
 }
 
 func (client *rpcClient) CallFor(out interface{}, method string, params ...interface{}) error {
@@ -226,7 +270,7 @@ func (client *rpcClient) newRequest(req interface{}) (*http.Request, error) {
 	}
 
 	//B_chenhui
-	//utils.Log("xxx rpcClient :body is: ", body)
+	log.Println("xxx rpcClient :body is: ", string(body))
 
 	request, err := http.NewRequest("POST", client.endpoint, bytes.NewReader(body))
 	if err != nil {
@@ -246,20 +290,22 @@ func (client *rpcClient) newRequest(req interface{}) (*http.Request, error) {
 }
 
 //--
-func (client *rpcClient) doCall(RPCRequest *RPCRequest) (*RPCResponse, error) {
+func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
 
-	httpRequest, err := client.newRequest(RPCRequest)
+	httpRequest, err := client.newRequest(bcRequest)
 	if err != nil {
-		return nil, fmt.Errorf("rpc call %v() on %v: %v", RPCRequest.Method, httpRequest.URL.String(), err.Error())
+		//return nil, fmt.Errorf("rpc call %v() on %v: %v", RPCRequest.Method, httpRequest.URL.String(), err.Error())
+		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 	httpResponse, err := client.httpClient.Do(httpRequest)
 	utils.Log("xxx doCall :httpResponse is:", httpResponse.Body) //chenhui
 	result, _ := ioutil.ReadAll(httpResponse.Body)
-	utils.Log("xxx doCall() response is:", string(result))
+	log.Println("xxx doCall() response is:", string(result))
 
 	if err != nil {
 		utils.Log("xxx doCall :httpResponse is error") //chenhui
-		return nil, fmt.Errorf("rpc call %v() on %v: %v", RPCRequest.Method, httpRequest.URL.String(), err.Error())
+		//return nil, fmt.Errorf("rpc call %v() on %v: %v", RPCRequest.Method, httpRequest.URL.String(), err.Error())
+		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 	defer httpResponse.Body.Close()
 
@@ -299,11 +345,14 @@ func (client *rpcClient) doCall(RPCRequest *RPCRequest) (*RPCResponse, error) {
 		if httpResponse.StatusCode >= 400 {
 			return nil, &HTTPError{
 				Code: httpResponse.StatusCode,
-				err:  fmt.Errorf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error()),
+				//err:  fmt.Errorf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error()),
+				err: fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error()),
 			}
 		}
-		fmt.Printf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error()) //chenhui
-		return nil, fmt.Errorf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error())
+		//fmt.Printf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error()) //chenhui
+		fmt.Printf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
+		//return nil, fmt.Errorf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error())
+		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 
 	// response body empty
@@ -313,10 +362,12 @@ func (client *rpcClient) doCall(RPCRequest *RPCRequest) (*RPCResponse, error) {
 		if httpResponse.StatusCode >= 400 {
 			return nil, &HTTPError{
 				Code: httpResponse.StatusCode,
-				err:  fmt.Errorf("rpc call %v() on %v status code: %v. rpc response missing", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode),
+				//err:  fmt.Errorf("rpc call %v() on %v status code: %v. rpc response missing", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode),
+				err: fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error()),
 			}
 		}
-		return nil, fmt.Errorf("rpc call %v() on %v status code: %v. rpc response missing", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode)
+		//return nil, fmt.Errorf("rpc call %v() on %v status code: %v. rpc response missing", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode)
+		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 
 	return rpcResponse, nil

@@ -111,12 +111,12 @@ type Controller interface {
 func sendJsonrpcRequest(method string) (*jsonrpc.RPCResponse, error) {
 	var err error
 	//rpcClient := jsonrpc.NewClient("http://my-rpc-service:8080/rpc")
-	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2")
+	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
 	if rpcClient == nil {
 		log.Println("rxxx sendJsonrpcRequest() pcClient is nil!")
 		return nil, err
 	}
-	rpcResp, err := rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: "00000000000000000000000000000001"})
+	rpcResp, err := rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: "mytest/1"})
 	if err != nil {
 		log.Println("xxx err for rpcClient.Call:", err.Error())
 		return nil, err
