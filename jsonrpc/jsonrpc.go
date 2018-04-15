@@ -108,6 +108,16 @@ type RPCResponse struct {
 	ID    uint      `json:"id"`
 }
 
+type BCResponse struct {
+	Data  string `json:"data"`
+	Nonce string `json:"nonce"`
+	//Result map[string]interface{} `json:"result,omitempty"`
+	//Result *json.RawMessage `json:"result,omitempty"`
+	//Error *RPCError `json:"error,omitempty"`
+	Timestamp string `json:"timestamp"`
+	Sign      string `json:"sign"`
+}
+
 // RPCError represents a JSON-RPC error object if an RPC error occurred.
 //
 // Code: holds the error code
@@ -314,10 +324,22 @@ func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
 	var rpcResp = new(RPCResponse)
 	//buf := make([]byte, 1024)
 	//httpResponse.Body.Read(buf)
-	json.Unmarshal(result, &rpcResp)
-	utils.Log("xxx doCall() rpcResp:", rpcResp)
+	var bcResponse *BCResponse
+	bcResponse = new(BCResponse)
 
-	mirrormsg, err := json.Marshal(rpcResp)
+	json.Unmarshal(result, &bcResponse)
+	utils.Log("xxx doCall() bcResponse:", bcResponse)
+
+	data := bcResponse.Data
+	utils.Log("xxx bcResponse.data:%v\n", data)
+	nonce := bcResponse.Nonce
+	utils.Log("xxx bcResponse.nonce:%v\n", nonce)
+	timestamp := bcResponse.Timestamp
+	utils.Log("xxx bcResponse.timestamp:%v\n", timestamp)
+	sign := bcResponse.Sign
+	utils.Log("xxx bcResponse.sign:%v\n", sign)
+
+	mirrormsg, err := json.Marshal(bcResponse)
 	utils.Log("xxx doCall() mirrormsg:", string(mirrormsg))
 	/*
 		id := rpcResp.ID
@@ -328,6 +350,9 @@ func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
 		state := rpcresult["state"].(string)
 		utils.Log("xxx rpcResp.Result.state:%v\n", state)
 	*/
+
+	json.Unmarshal([]byte(data), &rpcResp)
+	utils.Log("xxx doCall() bcResponse:", rpcResp)
 
 	rpcResponse = rpcResp
 	utils.Log("xxx doCall() rpcResponse:", rpcResponse)

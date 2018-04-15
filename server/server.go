@@ -44,9 +44,8 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	log.Printf("rpcRequest.Params.Key:%v\n", key)
 	channel := f.(map[string]interface{})["channel"].(string)
 	log.Printf("rpcRequest.Params.Channel:%v\n", channel)
-	handler.Excute(postdata)
-
-	err = c.WriteMessage(messageType, postdata)
+	rpcResp := handler.Excute(postdata)
+	err = c.WriteMessage(messageType, rpcResp)
 	if err != nil {
 		log.Println("write:", err)
 		return err
