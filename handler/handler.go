@@ -141,6 +141,23 @@ type Msg struct {
 	Content jsonrpc.RPCRequest     `json:"content"`
 }
 
+/*{
+    \"ID\": \"100\",
+    \"jianyanxiangmu\": \"ganguanyaoqiu\",
+    \"jiliangdanwei\": \"%\",
+    \"biaozhunyaoqiu\": \"fuhebiaozhun\",
+    \"pic1\": \"test/my1.txt\",
+    \"pic2\": \"test/my2.pic\"
+}"*/
+type State_Resp_Msg struct {
+	ID             string `json:"id"`
+	Jianyanxiangmu string `json:"jianyanxiangmu"`
+	Jiliangdanwei  string `json:"jiliangdanwei"`
+	Biaozhunyaoqiu string `json:"biaozhunyaoqiu"`
+	Pic1           string `json:"pic1"`
+	Pic2           string `json:"pic2"`
+}
+
 /*
 type Msg struct {
 	Meta    map[string]interface{} `json:"meta"`
@@ -207,6 +224,39 @@ func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 	return true, nil
 }
 
+/*type State_Resp_Msg struct {
+	ID             string `json:"id"`
+	Jianyanxiangmu string `json:"jianyanxiangmu"`
+	Jiliangdanwei  string `json:"jiliangdanwei"`
+	Biaozhunyaoqiu string `json:"biaozhunyaoqiu"`
+	Pic1           string `json:"pic1"`
+	Pic2           string `json:"pic2"`
+}*/
+func getPics(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
+
+	mirrormsg, err := json.Marshal(rpcResp)
+	utils.CheckError(err)
+	log.Println("xxx getPic1() mirrormsg:", string(mirrormsg))
+
+	var rpcRespState = new(RPCResponseState)
+	json.Unmarshal(mirrormsg, &rpcRespState)
+
+	id := rpcRespState.ID
+	log.Println("xxx getPic1() rpcRespState.id:", id)
+	jsonrpc := rpcRespState.JSONRPC
+	log.Println("xxx getPic1() rpcRespState.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespState.Result
+	state := rpcresult.State
+	log.Println("xxx getPic1() rpcRespState.Result.state:", state)
+	var stateRespMsg = new(State_Resp_Msg)
+	json.Unmarshal([]byte(state), &stateRespMsg)
+	pic1 := stateRespMsg.Pic1
+	log.Println("xxx getPic1() rpcRespState.pic1:", pic1)
+	pic2 := stateRespMsg.Pic2
+	log.Println("xxx getPic1() rpcRespState.pic2:", pic2)
+	return pic1, pic2, nil
+}
+
 //verifyTransactionMsg is to parse and verify the format of source-state message.
 func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
@@ -223,13 +273,13 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 	log.Println("xxx verifyTransactionMsg() rpcRespTx.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespTx.Result
 	/*
-				type ResultTransaction struct {
-					Channel_id string    `json:"channel_id"`
-					Data       string    `json:"data"`
-					Timestamp  Timestamp `json:"timestamp"`
-					Tx_id      string    `json:"tx_id"`
-					Type       string    `json:"type"`
-				}
+		type ResultTransaction struct {
+			Channel_id string    `json:"channel_id"`
+			Data       string    `json:"data"`
+			Timestamp  Timestamp `json:"timestamp"`
+			Tx_id      string    `json:"tx_id"`
+			Type       string    `json:"type"`
+		}
 		type DataItem struct {
 			Write WriteData `json:"write"`
 		}
@@ -344,23 +394,30 @@ func Excute(message []byte) []byte {
 
 	f := rpcRequest.Params
 	key := f.(map[string]interface{})["key"].(string)
-	log.Println("rpcRequest.Params.Key:", key)
+	log.Println("Excute() rpcRequest.Params.Key:", key)
 	channel := f.(map[string]interface{})["channel"].(string)
-	log.Println("rpcRequest.Params.Channel:", channel)
+	log.Println("Excute() rpcRequest.Params.Channel:", channel)
 	var tx_id string
 	if method == "source-transaction" {
 		tx_id = f.(map[string]interface{})["tx_id"].(string)
-		log.Println("rpcRequest.Params.tx_id:", tx_id)
+		log.Println("Excute() rpcRequest.Params.tx_id:", tx_id)
 	}
 
 	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
 
 	isok, err := verifyMsg(method, rpcResp)
-	if isok {
-		respMsg, err := json.Marshal(rpcResp)
-		log.Println("echo the message:", string(respMsg))
-		utils.CheckError(err)
-		return respMsg
+	if !isok {
+		return nil
 	}
-	return nil
+
+	pic1, pic2, err := getPics(rpcResp) //chenhui
+	log.Println("Excute() pic1:", pic1)
+	method = "source-get-binary"
+	tx_id = ""
+	rpcResp, err = sendJsonrpcRequest(method, pic1, tx_id)
+	log.Println("Excute() pic2:", pic2)
+	respMsg, err := json.Marshal(rpcResp)
+	log.Println("Excute() echo the message:", string(respMsg))
+	utils.CheckError(err)
+	return respMsg
 }

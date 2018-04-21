@@ -4,6 +4,7 @@ package jsonrpc
 import (
 	"bytes"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -336,6 +337,48 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 		if method == "source-get-binary" {
 			binary_obj := []byte(result)
 			log.Println("xxx doCall() binary_obj is:", string(binary_obj))
+			/*type RPCResponse struct {
+				JSONRPC string      `json:"jsonrpc"`
+				Result  interface{} `json:"result,omitempty"`
+				//Result map[string]interface{} `json:"result,omitempty"`
+				//Result *json.RawMessage `json:"result,omitempty"`
+				Error *RPCError `json:"error,omitempty"`
+				ID    uint      `json:"id"`
+			}*/
+			/*
+					request := &RPCRequest{
+					Method: "source-state",
+					Params: map[string]interface{}{
+						"key":     "mytest/4",
+						"channel": "vvtrip",
+					},
+					ID:      0,
+					JSONRPC: "2.0",
+				}
+			*/
+			/*
+				response := &RPCResponse{
+					JSONRPC: "2.0",
+					ID:      0,
+					Result: []{
+
+					}
+				}
+			*/
+			var results []map[string]interface{}
+			t := make(map[string]interface{})
+			t["pic"] = base64.StdEncoding.EncodeToString(binary_obj)
+			results = append(results, t)
+
+			response := make(map[string]interface{})
+			response["id"] = 0
+			response["jsonrpc"] = "2.0"
+			response["result"] = results
+			b, _ := json.Marshal(response)
+			err = json.Unmarshal(b, &rpcResp)
+
+			return rpcResp, nil
+
 		} else {
 			utils.Log("xxx doCall :json.Unmarshal error.....") //chenhui
 			return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
