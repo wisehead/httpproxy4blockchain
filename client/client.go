@@ -101,6 +101,7 @@ func main() {
 		ID      uint        `json:"id"` //chenhui
 		JSONRPC string      `json:"jsonrpc"`
 	}*/
+
 	//message 4: source-get-binary
 	request := &RPCRequest{
 		Method: "source-get-binary",

@@ -7,7 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"goproxy4blockchain/utils"
+	"httpproxy4blockchain/goproxy4blockchain/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -257,7 +257,7 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 		}
 	*/
 
-	return client.doCall(bcRequest)
+	return client.doCall(bcRequest, method)
 }
 
 func (client *rpcClient) CallFor(out interface{}, method string, params ...interface{}) error {
@@ -303,7 +303,7 @@ func (client *rpcClient) newRequest(req interface{}) (*http.Request, error) {
 }
 
 //--
-func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
+func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCResponse, error) {
 
 	httpRequest, err := client.newRequest(bcRequest)
 	if err != nil {
@@ -330,8 +330,17 @@ func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
 	var bcResponse *BCResponse
 	bcResponse = new(BCResponse)
 
-	json.Unmarshal(result, &bcResponse)
+	err = json.Unmarshal(result, &bcResponse)
 	utils.Log("xxx doCall() bcResponse:", bcResponse)
+	if err != nil {
+		if method == "source-get-binary" {
+			binary_obj := []byte(result)
+			log.Println("xxx doCall() binary_obj is:", string(binary_obj))
+		} else {
+			utils.Log("xxx doCall :json.Unmarshal error.....") //chenhui
+			return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
+		}
+	}
 
 	data := bcResponse.Data
 	utils.Log("xxx bcResponse.data:%v\n", data)
@@ -354,8 +363,18 @@ func (client *rpcClient) doCall(bcRequest *BCRequest) (*RPCResponse, error) {
 		utils.Log("xxx rpcResp.Result.state:%v\n", state)
 	*/
 
-	json.Unmarshal([]byte(data), &rpcResp)
+	err = json.Unmarshal([]byte(data), &rpcResp)
 	utils.Log("xxx doCall() bcResponse:", rpcResp)
+	log.Println("xxx doCall() method is:", method)
+	if err != nil {
+		if method == "source-get-binary" {
+			binary_obj := []byte(data)
+			log.Println("xxx doCall() binary_obj is:", string(binary_obj))
+		} else {
+			utils.Log("xxx doCall :json.Unmarshal error.....") //chenhui
+			return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
+		}
+	}
 
 	rpcResponse = rpcResp
 	utils.Log("xxx doCall() rpcResponse:", rpcResponse)
