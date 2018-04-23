@@ -29,6 +29,20 @@ type RPCResponseState struct {
 	ID    uint      `json:"id"`
 }
 
+type State_Resp_Pic_Msg struct {
+	Pic string `json:"pic"`
+}
+
+//RPCResponseState is the strunct for source-state message response.
+type RPCResponsePic struct {
+	JSONRPC string             `json:"jsonrpc"`
+	Result  State_Resp_Pic_Msg `json:"result,omitempty"`
+	//Result map[string]interface{} `json:"result,omitempty"`
+	//Result *json.RawMessage `json:"result,omitempty"`
+	Error *RPCError `json:"error,omitempty"`
+	ID    uint      `json:"id"`
+}
+
 //Timestamp is to describ the timestamp.
 type Timestamp struct {
 	Nanos   uint32 `json:"nanos"`
@@ -409,15 +423,78 @@ func Excute(message []byte) []byte {
 	if !isok {
 		return nil
 	}
+	respMsg, err := json.Marshal(rpcResp)
+	log.Println("Excute() echo the message:", string(respMsg))
 
-	pic1, pic2, err := getPics(rpcResp) //chenhui
-	log.Println("Excute() pic1:", pic1)
+	/*type State_Resp_Msg struct {
+		ID             string `json:"id"`
+		Jianyanxiangmu string `json:"jianyanxiangmu"`
+		Jiliangdanwei  string `json:"jiliangdanwei"`
+		Biaozhunyaoqiu string `json:"biaozhunyaoqiu"`
+		Pic1           string `json:"pic1"`
+		Pic2           string `json:"pic2"`
+	}*/
+
+	var rpcRespState = new(RPCResponseState)
+	json.Unmarshal(respMsg, &rpcRespState)
+
+	id := rpcRespState.ID
+	log.Println("xxx Excute() rpcRespState.id:", id)
+	jsonrpc := rpcRespState.JSONRPC
+	log.Println("xxx Excute() rpcRespState.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespState.Result
+	state := rpcresult.State
+	log.Println("xxx Excute() rpcRespState.Result.state:", state)
+	var stateRespMsg = new(State_Resp_Msg)
+	json.Unmarshal([]byte(state), &stateRespMsg)
+	pic1 := stateRespMsg.Pic1
+	log.Println("xxx Excute() rpcRespState.pic1:", pic1)
+	pic2 := stateRespMsg.Pic2
+	log.Println("xxx Excute() rpcRespState.pic2:", pic2)
+	stateId := stateRespMsg.ID
+	log.Println("xxx Excute() rpcRespState.stateId:", stateId)
+	jianyanxiangmu := stateRespMsg.Jianyanxiangmu
+	log.Println("xxx Excute() rpcRespState.jianyanxiangmu:", jianyanxiangmu)
+	jiliangdanwei := stateRespMsg.Jiliangdanwei
+	log.Println("xxx Excute() rpcRespState.jiliangdanwei:", jiliangdanwei)
+	biaozhunyaoqiu := stateRespMsg.Biaozhunyaoqiu
+	log.Println("xxx Excute() rpcRespState.biaozhunyaoqiu:", biaozhunyaoqiu)
+
+	//pic1, pic2, err = getPics(rpcResp) //chenhui
+	//log.Println("Excute() pic1:", pic1)
 	method = "source-get-binary"
 	tx_id = ""
 	rpcResp, err = sendJsonrpcRequest(method, pic1, tx_id)
-	log.Println("Excute() pic2:", pic2)
-	respMsg, err := json.Marshal(rpcResp)
+	respMsg, err = json.Marshal(rpcResp)
 	log.Println("Excute() echo the message:", string(respMsg))
+	//log.Println("Excute() pic2:", pic2)
+	var rpcRespPic = new(RPCResponsePic)
+	json.Unmarshal(respMsg, &rpcRespPic)
+	rpcresult2 := rpcRespPic.Result
+	pic1_obj := rpcresult2.Pic
+	log.Println("xxx Excute() rpcRespState.Result.pic1_obj:", pic1_obj)
+	/*
+		var results []map[string]interface{}
+		t := make(map[string]interface{})
+		t["pic"] = base64.StdEncoding.EncodeToString(binary_obj)
+		results = append(results, t)
+
+		response := make(map[string]interface{})
+		response["id"] = 0
+		response["jsonrpc"] = "2.0"
+		response["result"] = results
+		b, _ := json.Marshal(response)
+		err = json.Unmarshal(b, &rpcResp)
+	*/
+
+	/*
+		log.Println("Excute() pic2:", pic2)
+		method = "source-get-binary"
+		tx_id = ""
+		rpcResp, err = sendJsonrpcRequest(method, pic2, tx_id)
+		respMsg, err = json.Marshal(rpcResp)
+		log.Println("Excute() echo the message:", string(respMsg))
+	*/
 	utils.CheckError(err)
 	return respMsg
 }

@@ -365,15 +365,15 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 					}
 				}
 			*/
-			var results []map[string]interface{}
-			t := make(map[string]interface{})
-			t["pic"] = base64.StdEncoding.EncodeToString(binary_obj)
-			results = append(results, t)
+			//var results []map[string]interface{}
+			result := make(map[string]interface{})
+			result["pic"] = base64.StdEncoding.EncodeToString(binary_obj)
+			//results = append(results, t)
 
 			response := make(map[string]interface{})
 			response["id"] = 0
 			response["jsonrpc"] = "2.0"
-			response["result"] = results
+			response["result"] = result
 			b, _ := json.Marshal(response)
 			err = json.Unmarshal(b, &rpcResp)
 
