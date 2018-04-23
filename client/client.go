@@ -58,19 +58,21 @@ func main() {
 		}
 	}()
 
-	//Message 1:source-state
-	request := &RPCRequest{
-		Method: "source-state",
-		Params: map[string]interface{}{
-			"key":     "mytest/4",
-			"channel": "vvtrip",
-		},
-		ID:      0,
-		JSONRPC: "2.0",
-	}
-
 	/*
-		//Message 2:source-transactions
+		//Message 1:source-state
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "mytest/4",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
+
+	//Message 2:source-transactions
+	/*
 		request := &RPCRequest{
 			Method: "source-transactions",
 			Params: map[string]interface{}{
@@ -83,17 +85,18 @@ func main() {
 	*/
 	/*
 		//Message 3:source-transaction
-			request := &RPCRequest{
-				Method: "source-transaction",
-				Params: map[string]interface{}{
-					"key":     "mytest/1",
-					"tx_id":   "b11a94dd1142559380d1a715da39b6899ed55511f7e23164a50159e4dad4f936",
-					"channel": "vvtrip",
-				},
-				ID:      0,
-				JSONRPC: "2.0",
-			}
+		request := &RPCRequest{
+			Method: "source-transaction",
+			Params: map[string]interface{}{
+				"key":     "mytest/1",
+				"tx_id":   "b11a94dd1142559380d1a715da39b6899ed55511f7e23164a50159e4dad4f936",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
 	*/
+
 	/*type RPCRequest struct {
 		Method  string      `json:"method"`
 		Params  interface{} `json:"params,omitempty"`
@@ -102,17 +105,17 @@ func main() {
 	}*/
 
 	//message 4: source-get-binary
-	/*
-		request := &RPCRequest{
-			Method: "source-get-binary",
-			Params: map[string]interface{}{
-				"channel": "vvtrip",
-				"key":     "test/my1.txt",
-			},
-			JSONRPC: "2.0",
-			ID:      0,
-		}
-	*/
+
+	request := &RPCRequest{
+		Method: "source-get-binary",
+		Params: map[string]interface{}{
+			"channel": "vvtrip",
+			"key":     "test/my1.txt",
+		},
+		JSONRPC: "2.0",
+		ID:      0,
+	}
+
 	message, _ := json.Marshal(request)
 	//err = c.WriteMessage(websocket.TextMessage, []byte(message.String()))
 	err = c.WriteMessage(websocket.TextMessage, []byte(message))

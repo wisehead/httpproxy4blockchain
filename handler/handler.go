@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"httpproxy4blockchain/goproxy4blockchain/utils"
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
@@ -238,6 +239,26 @@ func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 	return true, nil
 }
 
+func verifyGetBinaryMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
+
+	mirrormsg, err := json.Marshal(rpcResp)
+	utils.CheckError(err)
+	logger.Info("xxx verifyGetBinaryMsg() mirrormsg:", string(mirrormsg))
+
+	var rpcRespPic = new(RPCResponsePic)
+	json.Unmarshal(mirrormsg, &rpcRespPic)
+
+	id := rpcRespPic.ID
+	logger.Info("xxx verifyGetBinaryMsg() rpcRespState.id:", id)
+	jsonrpc := rpcRespPic.JSONRPC
+	logger.Info("xxx verifyGetBinaryMsg() rpcRespState.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespPic.Result
+	pic := rpcresult.Pic
+	logger.Info("xxx verifyGetBinaryMsg() rpcRespState.Result.pic:", pic)
+
+	return true, nil
+}
+
 /*type State_Resp_Msg struct {
 	ID             string `json:"id"`
 	Jianyanxiangmu string `json:"jianyanxiangmu"`
@@ -379,53 +400,17 @@ func verifyMsg(method string, rpcResp *jsonrpc.RPCResponse) (bool, error) {
 		} else {
 			if method == "source-transaction" {
 				return verifyTransactionMsg(rpcResp)
+			} else {
+				if method == "source-get-binary" {
+					return verifyGetBinaryMsg(rpcResp)
+				}
 			}
 		}
 	}
 	return false, nil
 }
 
-//Excute is the function that each Controller needs to implement.
-func Excute(message []byte) []byte {
-	//mirrormsg, err := json.Marshal(message)
-
-	var rpcRequest jsonrpc.RPCRequest
-	err := json.Unmarshal(message, &rpcRequest)
-	if err != nil {
-		logger.Info(err)
-	}
-
-	//rpcRequest := entermsg.Content
-	logger.Info("xxx parsing the JSONRPC2.0 message from app client...")
-	/*
-		id := rpcRequest.ID
-		Log("xxx rpcRequest.id:", id)
-		jsonrpc := rpcRequest.JSONRPC
-		Log("xxx rpcRequest.jsonrpc:", jsonrpc)
-	*/
-	method := rpcRequest.Method
-	logger.Info("xxx Excute() parsing Method:", method)
-
-	f := rpcRequest.Params
-	key := f.(map[string]interface{})["key"].(string)
-	logger.Info("Excute() rpcRequest.Params.Key:", key)
-	channel := f.(map[string]interface{})["channel"].(string)
-	logger.Info("Excute() rpcRequest.Params.Channel:", channel)
-	var tx_id string
-	if method == "source-transaction" {
-		tx_id = f.(map[string]interface{})["tx_id"].(string)
-		logger.Info("Excute() rpcRequest.Params.tx_id:", tx_id)
-	}
-
-	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
-
-	isok, err := verifyMsg(method, rpcResp)
-	if !isok {
-		return nil
-	}
-	respMsg, err := json.Marshal(rpcResp)
-	logger.Info("Excute() echo the message:", string(respMsg))
-
+func handle_big_message(respMsg []byte) ([]byte, error) {
 	/*type State_Resp_Msg struct {
 		ID             string `json:"id"`
 		Jianyanxiangmu string `json:"jianyanxiangmu"`
@@ -463,9 +448,13 @@ func Excute(message []byte) []byte {
 
 	//pic1, pic2, err = getPics(rpcResp) //chenhui
 	logger.Info("Excute() pic1:", pic1)
-	method = "source-get-binary"
-	tx_id = ""
-	rpcResp, err = sendJsonrpcRequest(method, pic1, tx_id)
+	method := "source-get-binary"
+	tx_id := ""
+	rpcResp, err := sendJsonrpcRequest(method, pic1, tx_id)
+	if err != nil {
+		logger.Info("xxx doCall :json.Unmarshal error.....") //chenhui
+		return nil, fmt.Errorf("err is: %v", err.Error())
+	}
 	respMsg, err = json.Marshal(rpcResp)
 	logger.Info("Excute() echo the message:", string(respMsg))
 	//logger.Info("Excute() pic2:", pic2)
@@ -507,8 +496,59 @@ func Excute(message []byte) []byte {
 	respMsg, err = json.Marshal(response)
 	//logger.Info("Excute() echo the message:", string(respMsg))
 	logger.Info("Excute() echo the message:", string(respMsg))
-	//err = json.Unmarshal(b, &rpcResp)
+	return respMsg, nil
+}
 
+//Excute is the function that each Controller needs to implement.
+func Excute(message []byte) []byte {
+	//mirrormsg, err := json.Marshal(message)
+
+	var rpcRequest jsonrpc.RPCRequest
+	err := json.Unmarshal(message, &rpcRequest)
+	if err != nil {
+		logger.Info(err)
+	}
+
+	//rpcRequest := entermsg.Content
+	logger.Info("xxx parsing the JSONRPC2.0 message from app client...")
+	/*
+		id := rpcRequest.ID
+		Log("xxx rpcRequest.id:", id)
+		jsonrpc := rpcRequest.JSONRPC
+		Log("xxx rpcRequest.jsonrpc:", jsonrpc)
+	*/
+	method := rpcRequest.Method
+	logger.Info("xxx Excute() parsing Method:", method)
+
+	f := rpcRequest.Params
+	key := f.(map[string]interface{})["key"].(string)
+	logger.Info("Excute() rpcRequest.Params.Key:", key)
+	channel := f.(map[string]interface{})["channel"].(string)
+	logger.Info("Excute() rpcRequest.Params.Channel:", channel)
+	var tx_id string
+	if method == "source-transaction" {
+		tx_id = f.(map[string]interface{})["tx_id"].(string)
+		logger.Info("Excute() rpcRequest.Params.tx_id:", tx_id)
+	}
+
+	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
+	respMsg, err := json.Marshal(rpcResp)
+	logger.Info("Excute() echo the message:", string(respMsg))
+
+	isok, err := verifyMsg(method, rpcResp)
+	if !isok {
+		return nil
+	}
+
+	pic1, pic2, err := getPics(rpcResp)
+
+	respMsg, err = json.Marshal(rpcResp)
+	logger.Info("Excute() echo the message:", string(respMsg))
+	if pic1 != "" || pic2 != "" {
+		respMsg, err = handle_big_message(respMsg)
+		logger.Info("Excute() echo the message:", string(respMsg))
+	}
+	//err = json.Unmarshal(b, &rpcResp)
 	/*
 		logger.Info("Excute() pic2:", pic2)
 		method = "source-get-binary"
