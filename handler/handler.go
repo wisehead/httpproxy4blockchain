@@ -461,7 +461,7 @@ func Excute(message []byte) []byte {
 	log.Println("xxx Excute() rpcRespState.biaozhunyaoqiu:", biaozhunyaoqiu)
 
 	//pic1, pic2, err = getPics(rpcResp) //chenhui
-	//log.Println("Excute() pic1:", pic1)
+	log.Println("Excute() pic1:", pic1)
 	method = "source-get-binary"
 	tx_id = ""
 	rpcResp, err = sendJsonrpcRequest(method, pic1, tx_id)
@@ -473,19 +473,39 @@ func Excute(message []byte) []byte {
 	rpcresult2 := rpcRespPic.Result
 	pic1_obj := rpcresult2.Pic
 	log.Println("xxx Excute() rpcRespState.Result.pic1_obj:", pic1_obj)
-	/*
-		var results []map[string]interface{}
-		t := make(map[string]interface{})
-		t["pic"] = base64.StdEncoding.EncodeToString(binary_obj)
-		results = append(results, t)
 
-		response := make(map[string]interface{})
-		response["id"] = 0
-		response["jsonrpc"] = "2.0"
-		response["result"] = results
-		b, _ := json.Marshal(response)
-		err = json.Unmarshal(b, &rpcResp)
-	*/
+	log.Println("Excute() pic2:", pic2)
+	method = "source-get-binary"
+	tx_id = ""
+	rpcResp, err = sendJsonrpcRequest(method, pic2, tx_id)
+	respMsg, err = json.Marshal(rpcResp)
+	log.Println("Excute() echo the message:", string(respMsg))
+
+	var rpcRespPic2 = new(RPCResponsePic)
+	json.Unmarshal(respMsg, &rpcRespPic2)
+	rpcresult3 := rpcRespPic2.Result
+	pic2_obj := rpcresult3.Pic
+	log.Println("xxx Excute() rpcRespState.Result.pic2_obj:", pic2_obj)
+
+	stateX := make(map[string]interface{})
+	stateX["pic1"] = pic1_obj
+	stateX["pic2"] = pic2_obj
+	stateX["id"] = stateId
+	stateX["jianyanxiangmu"] = jianyanxiangmu
+	stateX["jiliangdanwei"] = jiliangdanwei
+	stateX["biaozhunyaoqiu"] = biaozhunyaoqiu
+
+	resultX := make(map[string]interface{})
+	resultX["state"] = stateX
+
+	response := make(map[string]interface{})
+	response["id"] = 0
+	response["jsonrpc"] = "2.0"
+	response["result"] = resultX
+	return respMsg
+	respMsg, err = json.Marshal(response)
+	log.Println("Excute() echo the message:", string(respMsg))
+	//err = json.Unmarshal(b, &rpcResp)
 
 	/*
 		log.Println("Excute() pic2:", pic2)
