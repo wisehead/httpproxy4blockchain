@@ -1,0 +1,3 @@
+INFO : 2018/04/23 15:48:43.408091 server.go:100: I'm about to do something!
+INFO : 2018/04/23 15:56:01.808598 server.go:100: I'm about to do something!xxxxxxx
+INFO : 2018/04/23 15:58:59.733960 server.go:100: I'm about to do something!:./logpath/proxy.log

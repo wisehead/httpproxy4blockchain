@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"httpproxy4blockchain/goproxy4blockchain/utils"
 	"httpproxy4blockchain/jsonrpc"
+	"httpproxy4blockchain/logger"
 	"log"
 )
 
@@ -396,7 +397,7 @@ func Excute(message []byte) []byte {
 	}
 
 	//rpcRequest := entermsg.Content
-	log.Println("xxx parsing the JSONRPC2.0 message from app client...")
+	logger.Info("xxx parsing the JSONRPC2.0 message from app client...")
 	/*
 		id := rpcRequest.ID
 		Log("xxx rpcRequest.id:", id)
@@ -404,7 +405,7 @@ func Excute(message []byte) []byte {
 		Log("xxx rpcRequest.jsonrpc:", jsonrpc)
 	*/
 	method := rpcRequest.Method
-	log.Println("xxx Excute() parsing Method:", method)
+	logger.Info("xxx Excute() parsing Method:", method)
 
 	f := rpcRequest.Params
 	key := f.(map[string]interface{})["key"].(string)
@@ -439,7 +440,8 @@ func Excute(message []byte) []byte {
 	json.Unmarshal(respMsg, &rpcRespState)
 
 	id := rpcRespState.ID
-	log.Println("xxx Excute() rpcRespState.id:", id)
+	//log.Println("xxx Excute() rpcRespState.id:", id)
+	logger.Info("xxx Excute() rpcRespState.id:", id)
 	jsonrpc := rpcRespState.JSONRPC
 	log.Println("xxx Excute() rpcRespState.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespState.Result
@@ -504,7 +506,8 @@ func Excute(message []byte) []byte {
 	response["result"] = resultX
 	return respMsg
 	respMsg, err = json.Marshal(response)
-	log.Println("Excute() echo the message:", string(respMsg))
+	//log.Println("Excute() echo the message:", string(respMsg))
+	logger.Info("Excute() echo the message:", string(respMsg))
 	//err = json.Unmarshal(b, &rpcResp)
 
 	/*
