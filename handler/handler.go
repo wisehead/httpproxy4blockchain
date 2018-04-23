@@ -5,7 +5,6 @@ import (
 	"httpproxy4blockchain/goproxy4blockchain/utils"
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
-	"log"
 )
 
 //in this part, we try to decouple the whole code by a route-controller structure;
@@ -191,7 +190,7 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 	//rpcClient := jsonrpc.NewClient("http://my-rpc-service:8080/rpc")
 	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
 	if rpcClient == nil {
-		log.Println("rxxx sendJsonrpcRequest() pcClient is nil!")
+		logger.Info("rxxx sendJsonrpcRequest() pcClient is nil!")
 		return nil, err
 	}
 
@@ -203,18 +202,18 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 	}
 
 	if err != nil {
-		log.Println("xxx err for rpcClient.Call:", err.Error())
+		logger.Info("xxx err for rpcClient.Call:", err.Error())
 		return nil, err
 	}
 	//id := rpcResp.ID
-	//log.Println("xxx sendJsonrpcRequest() rpcResp.id:", id)
+	//logger.Info("xxx sendJsonrpcRequest() rpcResp.id:", id)
 	//jsonrpc := rpcResp.JSONRPC
-	//log.Println("xxx sendJsonrpcRequest() rpcResp.jsonrpc:", jsonrpc)
+	//logger.Info("xxx sendJsonrpcRequest() rpcResp.jsonrpc:", jsonrpc)
 	//rpcresult := rpcResp.Result
 	//fix-me:
 	//need serveral parser functions to parse different result structs.
 	//tx_id := rpcresult["tx_id"].(string)
-	//log.Println("xxx sendJsonrpcRequest() rpcResp.Result.tx_id:", tx_id)
+	//logger.Info("xxx sendJsonrpcRequest() rpcResp.Result.tx_id:", tx_id)
 	return rpcResp, nil
 }
 
@@ -223,18 +222,18 @@ func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
 	utils.CheckError(err)
-	log.Println("xxx verifyStateMsg() mirrormsg:", string(mirrormsg))
+	logger.Info("xxx verifyStateMsg() mirrormsg:", string(mirrormsg))
 
 	var rpcRespState = new(RPCResponseState)
 	json.Unmarshal(mirrormsg, &rpcRespState)
 
 	id := rpcRespState.ID
-	log.Println("xxx verifyStateMsg() rpcRespState.id:", id)
+	logger.Info("xxx verifyStateMsg() rpcRespState.id:", id)
 	jsonrpc := rpcRespState.JSONRPC
-	log.Println("xxx verifyStateMsg() rpcRespState.jsonrpc:", jsonrpc)
+	logger.Info("xxx verifyStateMsg() rpcRespState.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespState.Result
 	state := rpcresult.State
-	log.Println("xxx verifyStateMsg() rpcRespState.Result.state:", state)
+	logger.Info("xxx verifyStateMsg() rpcRespState.Result.state:", state)
 
 	return true, nil
 }
@@ -251,24 +250,24 @@ func getPics(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
 	utils.CheckError(err)
-	log.Println("xxx getPic1() mirrormsg:", string(mirrormsg))
+	logger.Info("xxx getPic1() mirrormsg:", string(mirrormsg))
 
 	var rpcRespState = new(RPCResponseState)
 	json.Unmarshal(mirrormsg, &rpcRespState)
 
 	id := rpcRespState.ID
-	log.Println("xxx getPic1() rpcRespState.id:", id)
+	logger.Info("xxx getPic1() rpcRespState.id:", id)
 	jsonrpc := rpcRespState.JSONRPC
-	log.Println("xxx getPic1() rpcRespState.jsonrpc:", jsonrpc)
+	logger.Info("xxx getPic1() rpcRespState.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespState.Result
 	state := rpcresult.State
-	log.Println("xxx getPic1() rpcRespState.Result.state:", state)
+	logger.Info("xxx getPic1() rpcRespState.Result.state:", state)
 	var stateRespMsg = new(State_Resp_Msg)
 	json.Unmarshal([]byte(state), &stateRespMsg)
 	pic1 := stateRespMsg.Pic1
-	log.Println("xxx getPic1() rpcRespState.pic1:", pic1)
+	logger.Info("xxx getPic1() rpcRespState.pic1:", pic1)
 	pic2 := stateRespMsg.Pic2
-	log.Println("xxx getPic1() rpcRespState.pic2:", pic2)
+	logger.Info("xxx getPic1() rpcRespState.pic2:", pic2)
 	return pic1, pic2, nil
 }
 
@@ -277,15 +276,15 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
 	utils.CheckError(err)
-	log.Println("xxx verifyTransactionMsg() mirrormsg:", string(mirrormsg))
+	logger.Info("xxx verifyTransactionMsg() mirrormsg:", string(mirrormsg))
 
 	var rpcRespTx = new(RPCResponseTransaction)
 	json.Unmarshal(mirrormsg, &rpcRespTx)
 
 	id := rpcRespTx.ID
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.id:", id)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.id:", id)
 	jsonrpc := rpcRespTx.JSONRPC
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.jsonrpc:", jsonrpc)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespTx.Result
 	/*
 		type ResultTransaction struct {
@@ -305,21 +304,21 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 		}
 	*/
 	channel_id := rpcresult.Channel_id
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.channel_id:", channel_id)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.channel_id:", channel_id)
 	timestamp := rpcresult.Timestamp
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.timestamp:", timestamp)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.timestamp:", timestamp)
 	tx_id := rpcresult.Tx_id
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.tx_id:", tx_id)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.tx_id:", tx_id)
 	resulttype := rpcresult.Type
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.resulttype:", resulttype)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.resulttype:", resulttype)
 	data := rpcresult.Data
 	write := data.Write
 	is_delete := write.Is_delete
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.is_delete:", is_delete)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.data.is_delete:", is_delete)
 	key := write.Key
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.key:", key)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.data.key:", key)
 	value := write.Value
-	log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.data.value:", value)
+	logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.data.value:", value)
 
 	/*
 		for i := range rpcresults {
@@ -327,13 +326,13 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 			//result[i]表示获得第i个json对象即JSONObject
 			//result[i]通过.字段名称即可获得指定字段的值
 			tx_id := rpcresults[i].Tx_id
-			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Tx_id:", tx_id)
+			logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.Tx_id:", tx_id)
 			value := rpcresults[i].Value
-			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Value:", value)
+			logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.Value:", value)
 			timestamp := rpcresults[i].Timestamp
 			nanos := timestamp.Nanos
 			seconds := timestamp.Seconds
-			log.Println("xxx verifyTransactionMsg() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
+			logger.Info("xxx verifyTransactionMsg() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
 		}
 	*/
 	return true, nil
@@ -344,28 +343,28 @@ func verifyTransactionsMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
 	utils.CheckError(err)
-	log.Println("xxx verifyTransactionMsgs() mirrormsg:", string(mirrormsg))
+	logger.Info("xxx verifyTransactionMsgs() mirrormsg:", string(mirrormsg))
 
 	var rpcRespTx = new(RPCResponseTransactions)
 	json.Unmarshal(mirrormsg, &rpcRespTx)
 
 	id := rpcRespTx.ID
-	log.Println("xxx verifyTransactionMsgs() rpcRespTx.id:", id)
+	logger.Info("xxx verifyTransactionMsgs() rpcRespTx.id:", id)
 	jsonrpc := rpcRespTx.JSONRPC
-	log.Println("xxx verifyTransactionMsgs() rpcRespTx.jsonrpc:", jsonrpc)
+	logger.Info("xxx verifyTransactionMsgs() rpcRespTx.jsonrpc:", jsonrpc)
 	rpcresults := rpcRespTx.Result
 	for i := range rpcresults {
 		//表示遍历数组，而i表示的是数组的下标值，
 		//result[i]表示获得第i个json对象即JSONObject
 		//result[i]通过.字段名称即可获得指定字段的值
 		tx_id := rpcresults[i].Tx_id
-		log.Println("xxx verifyTransactionsMsg() rpcRespTx.Result.Tx_id:", tx_id)
+		logger.Info("xxx verifyTransactionsMsg() rpcRespTx.Result.Tx_id:", tx_id)
 		value := rpcresults[i].Value
-		log.Println("xxx verifyTransactionsMsg() rpcRespTx.Result.Value:", value)
+		logger.Info("xxx verifyTransactionsMsg() rpcRespTx.Result.Value:", value)
 		timestamp := rpcresults[i].Timestamp
 		nanos := timestamp.Nanos
 		seconds := timestamp.Seconds
-		log.Println("xxx verifyTransactionMsgs() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
+		logger.Info("xxx verifyTransactionMsgs() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
 	}
 
 	return true, nil
@@ -393,7 +392,7 @@ func Excute(message []byte) []byte {
 	var rpcRequest jsonrpc.RPCRequest
 	err := json.Unmarshal(message, &rpcRequest)
 	if err != nil {
-		log.Println(err)
+		logger.Info(err)
 	}
 
 	//rpcRequest := entermsg.Content
@@ -409,13 +408,13 @@ func Excute(message []byte) []byte {
 
 	f := rpcRequest.Params
 	key := f.(map[string]interface{})["key"].(string)
-	log.Println("Excute() rpcRequest.Params.Key:", key)
+	logger.Info("Excute() rpcRequest.Params.Key:", key)
 	channel := f.(map[string]interface{})["channel"].(string)
-	log.Println("Excute() rpcRequest.Params.Channel:", channel)
+	logger.Info("Excute() rpcRequest.Params.Channel:", channel)
 	var tx_id string
 	if method == "source-transaction" {
 		tx_id = f.(map[string]interface{})["tx_id"].(string)
-		log.Println("Excute() rpcRequest.Params.tx_id:", tx_id)
+		logger.Info("Excute() rpcRequest.Params.tx_id:", tx_id)
 	}
 
 	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
@@ -425,7 +424,7 @@ func Excute(message []byte) []byte {
 		return nil
 	}
 	respMsg, err := json.Marshal(rpcResp)
-	log.Println("Excute() echo the message:", string(respMsg))
+	logger.Info("Excute() echo the message:", string(respMsg))
 
 	/*type State_Resp_Msg struct {
 		ID             string `json:"id"`
@@ -440,54 +439,54 @@ func Excute(message []byte) []byte {
 	json.Unmarshal(respMsg, &rpcRespState)
 
 	id := rpcRespState.ID
-	//log.Println("xxx Excute() rpcRespState.id:", id)
+	//logger.Info("xxx Excute() rpcRespState.id:", id)
 	logger.Info("xxx Excute() rpcRespState.id:", id)
 	jsonrpc := rpcRespState.JSONRPC
-	log.Println("xxx Excute() rpcRespState.jsonrpc:", jsonrpc)
+	logger.Info("xxx Excute() rpcRespState.jsonrpc:", jsonrpc)
 	rpcresult := rpcRespState.Result
 	state := rpcresult.State
-	log.Println("xxx Excute() rpcRespState.Result.state:", state)
+	logger.Info("xxx Excute() rpcRespState.Result.state:", state)
 	var stateRespMsg = new(State_Resp_Msg)
 	json.Unmarshal([]byte(state), &stateRespMsg)
 	pic1 := stateRespMsg.Pic1
-	log.Println("xxx Excute() rpcRespState.pic1:", pic1)
+	logger.Info("xxx Excute() rpcRespState.pic1:", pic1)
 	pic2 := stateRespMsg.Pic2
-	log.Println("xxx Excute() rpcRespState.pic2:", pic2)
+	logger.Info("xxx Excute() rpcRespState.pic2:", pic2)
 	stateId := stateRespMsg.ID
-	log.Println("xxx Excute() rpcRespState.stateId:", stateId)
+	logger.Info("xxx Excute() rpcRespState.stateId:", stateId)
 	jianyanxiangmu := stateRespMsg.Jianyanxiangmu
-	log.Println("xxx Excute() rpcRespState.jianyanxiangmu:", jianyanxiangmu)
+	logger.Info("xxx Excute() rpcRespState.jianyanxiangmu:", jianyanxiangmu)
 	jiliangdanwei := stateRespMsg.Jiliangdanwei
-	log.Println("xxx Excute() rpcRespState.jiliangdanwei:", jiliangdanwei)
+	logger.Info("xxx Excute() rpcRespState.jiliangdanwei:", jiliangdanwei)
 	biaozhunyaoqiu := stateRespMsg.Biaozhunyaoqiu
-	log.Println("xxx Excute() rpcRespState.biaozhunyaoqiu:", biaozhunyaoqiu)
+	logger.Info("xxx Excute() rpcRespState.biaozhunyaoqiu:", biaozhunyaoqiu)
 
 	//pic1, pic2, err = getPics(rpcResp) //chenhui
-	log.Println("Excute() pic1:", pic1)
+	logger.Info("Excute() pic1:", pic1)
 	method = "source-get-binary"
 	tx_id = ""
 	rpcResp, err = sendJsonrpcRequest(method, pic1, tx_id)
 	respMsg, err = json.Marshal(rpcResp)
-	log.Println("Excute() echo the message:", string(respMsg))
-	//log.Println("Excute() pic2:", pic2)
+	logger.Info("Excute() echo the message:", string(respMsg))
+	//logger.Info("Excute() pic2:", pic2)
 	var rpcRespPic = new(RPCResponsePic)
 	json.Unmarshal(respMsg, &rpcRespPic)
 	rpcresult2 := rpcRespPic.Result
 	pic1_obj := rpcresult2.Pic
-	log.Println("xxx Excute() rpcRespState.Result.pic1_obj:", pic1_obj)
+	logger.Info("xxx Excute() rpcRespState.Result.pic1_obj:", pic1_obj)
 
-	log.Println("Excute() pic2:", pic2)
+	logger.Info("Excute() pic2:", pic2)
 	method = "source-get-binary"
 	tx_id = ""
 	rpcResp, err = sendJsonrpcRequest(method, pic2, tx_id)
 	respMsg, err = json.Marshal(rpcResp)
-	log.Println("Excute() echo the message:", string(respMsg))
+	logger.Info("Excute() echo the message:", string(respMsg))
 
 	var rpcRespPic2 = new(RPCResponsePic)
 	json.Unmarshal(respMsg, &rpcRespPic2)
 	rpcresult3 := rpcRespPic2.Result
 	pic2_obj := rpcresult3.Pic
-	log.Println("xxx Excute() rpcRespState.Result.pic2_obj:", pic2_obj)
+	logger.Info("xxx Excute() rpcRespState.Result.pic2_obj:", pic2_obj)
 
 	stateX := make(map[string]interface{})
 	stateX["pic1"] = pic1_obj
@@ -504,19 +503,19 @@ func Excute(message []byte) []byte {
 	response["id"] = 0
 	response["jsonrpc"] = "2.0"
 	response["result"] = resultX
-	return respMsg
+
 	respMsg, err = json.Marshal(response)
-	//log.Println("Excute() echo the message:", string(respMsg))
+	//logger.Info("Excute() echo the message:", string(respMsg))
 	logger.Info("Excute() echo the message:", string(respMsg))
 	//err = json.Unmarshal(b, &rpcResp)
 
 	/*
-		log.Println("Excute() pic2:", pic2)
+		logger.Info("Excute() pic2:", pic2)
 		method = "source-get-binary"
 		tx_id = ""
 		rpcResp, err = sendJsonrpcRequest(method, pic2, tx_id)
 		respMsg, err = json.Marshal(rpcResp)
-		log.Println("Excute() echo the message:", string(respMsg))
+		logger.Info("Excute() echo the message:", string(respMsg))
 	*/
 	utils.CheckError(err)
 	return respMsg

@@ -28,28 +28,24 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	var rpcRequest jsonrpc.RPCRequest
 	err := json.Unmarshal(postdata, &rpcRequest)
 	if err != nil {
-		log.Print("Unmarshal:", err)
+		logger.Info("Unmarshal:", err)
 		return err
 	}
 
-	//rpcRequest := entermsg.Content
-	//log.Printf("xxx parsing the JSONRPC2.0 message from app client...\n")
-	//id := rpcRequest.ID
-	//log.Printf("xxx rpcRequest.id:%v\n", id)
 	jsonrpc := rpcRequest.JSONRPC
-	log.Printf("xxx rpcRequest.jsonrpc:%v\n", jsonrpc)
+	logger.Info("xxx rpcRequest.jsonrpc:%v\n", jsonrpc)
 	method := rpcRequest.Method
-	log.Printf("xxx rpcRequest.Method:%v\n", method)
+	logger.Info("xxx rpcRequest.Method:%v\n", method)
 
 	f := rpcRequest.Params
 	key := f.(map[string]interface{})["key"].(string)
-	log.Printf("rpcRequest.Params.Key:%v\n", key)
+	logger.Info("rpcRequest.Params.Key:%v\n", key)
 	channel := f.(map[string]interface{})["channel"].(string)
-	log.Printf("rpcRequest.Params.Channel:%v\n", channel)
+	logger.Info("rpcRequest.Params.Channel:%v\n", channel)
 	rpcResp := handler.Excute(postdata)
 	err = c.WriteMessage(messageType, rpcResp)
 	if err != nil {
-		log.Println("write:", err)
+		logger.Info("write:", err)
 		return err
 	}
 	return nil
@@ -58,21 +54,21 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		logger.Info("upgrade:", err)
 		return
 	}
 	defer c.Close()
 	for {
 		mt, message, err := c.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
+			logger.Info("read:", err)
 			break
 		}
-		log.Printf("recv: %s", message)
+		logger.Info("recv: %s", message)
 		//err = c.WriteMessage(mt, message)
 		err = handleMsg(c, mt, message)
 		if err != nil {
-			log.Println("handle:", err)
+			logger.Info("handle:", err)
 			break
 		}
 	}

@@ -8,9 +8,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"httpproxy4blockchain/goproxy4blockchain/utils"
+	"httpproxy4blockchain/logger"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -229,19 +228,18 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 	}
 
 	//B_chenhui
-	log.Println("xxx Call() :rpcRequest is: ", string(body))
+	logger.Info("xxx Call() :rpcRequest is: ", string(body))
 
 	str := strconv.Quote(string(body))
-	fmt.Println("str:" + str)
+	logger.Info("str:" + str)
 
 	data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540659"
-	log.Println("xxx Call() :data_orig is: ", data_orig)
+	logger.Info("xxx Call() :data_orig is: ", data_orig)
 
 	h := md5.New()
 	h.Write([]byte(data_orig)) // 需要加密的字符串为 123456
 	cipherStr := h.Sum(nil)
-	//log.Println(cipherStr)
-	log.Printf("xxx Call() sign is:%s\n", hex.EncodeToString(cipherStr)) // 输出加密结果
+	logger.Info("xxx Call() sign is:%s\n", hex.EncodeToString(cipherStr)) // 输出加密结果
 
 	bcRequest := &BCRequest{
 		Data:  string(body),
@@ -284,7 +282,7 @@ func (client *rpcClient) newRequest(req interface{}) (*http.Request, error) {
 	}
 
 	//B_chenhui
-	log.Println("xxx rpcClient :body is: ", string(body))
+	logger.Info("xxx rpcClient :body is: ", string(body))
 
 	request, err := http.NewRequest("POST", client.endpoint, bytes.NewReader(body))
 	if err != nil {
@@ -312,12 +310,12 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 	httpResponse, err := client.httpClient.Do(httpRequest)
-	utils.Log("xxx doCall :httpResponse is:", httpResponse.Body) //chenhui
+	logger.Info("xxx doCall :httpResponse is:", httpResponse.Body) //chenhui
 	result, _ := ioutil.ReadAll(httpResponse.Body)
-	log.Println("xxx doCall() response is:", string(result))
+	logger.Info("xxx doCall() response is:", string(result))
 
 	if err != nil {
-		utils.Log("xxx doCall :httpResponse is error") //chenhui
+		logger.Info("xxx doCall :httpResponse is error") //chenhui
 		//return nil, fmt.Errorf("rpc call %v() on %v: %v", RPCRequest.Method, httpRequest.URL.String(), err.Error())
 		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
@@ -332,11 +330,11 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 	bcResponse = new(BCResponse)
 
 	err = json.Unmarshal(result, &bcResponse)
-	utils.Log("xxx doCall() bcResponse:", bcResponse)
+	logger.Info("xxx doCall() bcResponse:", bcResponse)
 	if err != nil {
 		if method == "source-get-binary" {
 			binary_obj := []byte(result)
-			log.Println("xxx doCall() binary_obj is:", string(binary_obj))
+			logger.Info("xxx doCall() binary_obj is:", string(binary_obj))
 			/*type RPCResponse struct {
 				JSONRPC string      `json:"jsonrpc"`
 				Result  interface{} `json:"result,omitempty"`
@@ -380,47 +378,38 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 			return rpcResp, nil
 
 		} else {
-			utils.Log("xxx doCall :json.Unmarshal error.....") //chenhui
+			logger.Info("xxx doCall :json.Unmarshal error.....") //chenhui
 			return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 		}
 	}
 
 	data := bcResponse.Data
-	utils.Log("xxx bcResponse.data:%v\n", data)
+	logger.Info("xxx bcResponse.data:%v\n", data)
 	nonce := bcResponse.Nonce
-	utils.Log("xxx bcResponse.nonce:%v\n", nonce)
+	logger.Info("xxx bcResponse.nonce:%v\n", nonce)
 	timestamp := bcResponse.Timestamp
-	utils.Log("xxx bcResponse.timestamp:%v\n", timestamp)
+	logger.Info("xxx bcResponse.timestamp:%v\n", timestamp)
 	sign := bcResponse.Sign
-	utils.Log("xxx bcResponse.sign:%v\n", sign)
+	logger.Info("xxx bcResponse.sign:%v\n", sign)
 
 	mirrormsg, err := json.Marshal(bcResponse)
-	utils.Log("xxx doCall() mirrormsg:", string(mirrormsg))
-	/*
-		id := rpcResp.ID
-		utils.Log("xxx rpcResp.id:%v\n", id)
-		jsonrpc := rpcResp.JSONRPC
-		utils.Log("xxx rpcResp.jsonrpc:%v\n", jsonrpc)
-		rpcresult := rpcResp.Result
-		state := rpcresult["state"].(string)
-		utils.Log("xxx rpcResp.Result.state:%v\n", state)
-	*/
+	logger.Info("xxx doCall() mirrormsg:", string(mirrormsg))
 
 	err = json.Unmarshal([]byte(data), &rpcResp)
-	utils.Log("xxx doCall() bcResponse:", rpcResp)
-	log.Println("xxx doCall() method is:", method)
+	logger.Info("xxx doCall() bcResponse:", rpcResp)
+	logger.Info("xxx doCall() method is:", method)
 	if err != nil {
 		if method == "source-get-binary" {
 			binary_obj := []byte(data)
-			log.Println("xxx doCall() binary_obj is:", string(binary_obj))
+			logger.Info("xxx doCall() binary_obj is:", string(binary_obj))
 		} else {
-			utils.Log("xxx doCall :json.Unmarshal error.....") //chenhui
+			logger.Info("xxx doCall :json.Unmarshal error.....") //chenhui
 			return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 		}
 	}
 
 	rpcResponse = rpcResp
-	utils.Log("xxx doCall() rpcResponse:", rpcResponse)
+	logger.Info("xxx doCall() rpcResponse:", rpcResponse)
 	/*
 		decoder := json.NewDecoder(httpResponse.Body)
 		decoder.DisallowUnknownFields()
@@ -430,7 +419,7 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 
 	// parsing error
 	if err != nil && err.Error() != "EOF" {
-		utils.Log("xxx doCall :httpResponse parsing error.....") //chenhui
+		logger.Info("xxx doCall :httpResponse parsing error.....") //chenhui
 		// if we have some http error, return it
 		if httpResponse.StatusCode >= 400 {
 			return nil, &HTTPError{
@@ -440,14 +429,14 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 			}
 		}
 		//fmt.Printf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error()) //chenhui
-		fmt.Printf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
+		logger.Info("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 		//return nil, fmt.Errorf("rpc call %v() on %v status code: %v. could not decode body to rpc response: %v", RPCRequest.Method, httpRequest.URL.String(), httpResponse.StatusCode, err.Error())
 		return nil, fmt.Errorf("rpc call on %v: %v", httpRequest.URL.String(), err.Error())
 	}
 
 	// response body empty
 	if rpcResponse == nil {
-		utils.Log("xxx doCall :rpcResponse is null .....") //chenhui
+		logger.Info("xxx doCall :rpcResponse is null .....") //chenhui
 		// if we have some http error, return it
 		if httpResponse.StatusCode >= 400 {
 			return nil, &HTTPError{
