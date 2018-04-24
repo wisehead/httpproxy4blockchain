@@ -26,7 +26,8 @@ type RPCRequest struct {
 	JSONRPC string      `json:"jsonrpc"`
 }
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
+//var addr = flag.String("addr", "localhost:8080", "http service address")
+var addr = flag.String("addr", "127.0.0.1:8080", "http service address")
 
 //101.201.36.66
 //var addr = flag.String("addr", "101.201.36.66:8080", "http service address")
