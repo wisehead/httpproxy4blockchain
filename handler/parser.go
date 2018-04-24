@@ -109,3 +109,11 @@ type SoilCheckReportItem struct {
 	LN166872SingleConclusion string `json:"ln166872SingleConclusion"`
 	LN166872DetectionBasis   string `json:"ln166872DetectionBasis"`
 }
+
+type OneRecord struct {
+	SeedInfoData                        SeedInfo                        `json:"seedInfoData"`
+	BiologicalOrganicFertilizerInfoData BiologicalOrganicFertilizerInfo `json:"biologicalOrganicFertilizerInfoData"`
+	OrganicAuthenticationInfoData       OrganicAuthenticationInfo       `json:"organicAuthenticationInfoData"`
+	ProductInfomationData               ProductInfomation               `json:"productInfomationData"`
+	SoilCheckReportData                 SoilCheckReport                 `json:"soilCheckReportData"`
+}
