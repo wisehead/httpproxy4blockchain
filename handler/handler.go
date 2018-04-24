@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"goproxy4blockchain/utils"
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
 )
@@ -185,6 +184,14 @@ type Controller interface {
 	Excute(message Msg) []byte
 }
 
+//CheckError is to check whether there is an error, if so print it out.
+func CheckError(err error) {
+	if err != nil {
+		//LogErr(os.Stderr, "Fatal error: %s", err.Error())
+		logger.Error("Fatal error: %s", err.Error())
+	}
+}
+
 //sendJsonrpcRequest is to send request to block chain service.
 func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCResponse, error) {
 	var err error
@@ -222,7 +229,7 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
-	utils.CheckError(err)
+	CheckError(err)
 	logger.Info("xxx verifyStateMsg() mirrormsg:", string(mirrormsg))
 
 	var rpcRespState = new(RPCResponseState)
@@ -242,7 +249,7 @@ func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 func verifyGetBinaryMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
-	utils.CheckError(err)
+	CheckError(err)
 	logger.Info("xxx verifyGetBinaryMsg() mirrormsg:", string(mirrormsg))
 
 	var rpcRespPic = new(RPCResponsePic)
@@ -270,7 +277,7 @@ func verifyGetBinaryMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 func getPics(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
-	utils.CheckError(err)
+	CheckError(err)
 	logger.Info("xxx getPic1() mirrormsg:", string(mirrormsg))
 
 	var rpcRespState = new(RPCResponseState)
@@ -296,7 +303,7 @@ func getPics(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
 func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
-	utils.CheckError(err)
+	CheckError(err)
 	logger.Info("xxx verifyTransactionMsg() mirrormsg:", string(mirrormsg))
 
 	var rpcRespTx = new(RPCResponseTransaction)
@@ -363,7 +370,7 @@ func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 func verifyTransactionsMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
 	mirrormsg, err := json.Marshal(rpcResp)
-	utils.CheckError(err)
+	CheckError(err)
 	logger.Info("xxx verifyTransactionMsgs() mirrormsg:", string(mirrormsg))
 
 	var rpcRespTx = new(RPCResponseTransactions)
@@ -557,6 +564,6 @@ func Excute(message []byte) []byte {
 		respMsg, err = json.Marshal(rpcResp)
 		logger.Info("Excute() echo the message:", string(respMsg))
 	*/
-	utils.CheckError(err)
+	CheckError(err)
 	return respMsg
 }
