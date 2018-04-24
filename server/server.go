@@ -93,7 +93,7 @@ func main() {
 
 	defer logger.Init("LoggerProxy", *verbose, true, lf).Close()
 
-	logger.Info("I'm about to do something!:", logPath)
+	logger.Info("starting Blockchain proxy!...:", logPath)
 
 	log.SetFlags(0)
 	http.HandleFunc("/echo", echo)

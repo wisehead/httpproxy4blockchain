@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"httpproxy4blockchain/goproxy4blockchain/utils"
+	"goproxy4blockchain/utils"
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
 )
