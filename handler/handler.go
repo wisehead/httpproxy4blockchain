@@ -410,6 +410,10 @@ func verifyMsg(method string, rpcResp *jsonrpc.RPCResponse) (bool, error) {
 			} else {
 				if method == "source-get-binary" {
 					return verifyGetBinaryMsg(rpcResp)
+				} else {
+					//let the client to handle the result error in jsonrpc.
+					//won't handle the error here.
+					return true, nil
 				}
 			}
 		}

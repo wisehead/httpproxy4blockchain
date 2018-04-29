@@ -384,13 +384,13 @@ func (client *rpcClient) doCall(bcRequest *BCRequest, method string) (*RPCRespon
 	}
 
 	data := bcResponse.Data
-	logger.Info("xxx bcResponse.data:%v\n", data)
+	logger.Info("xxx bcResponse.data:", data)
 	nonce := bcResponse.Nonce
-	logger.Info("xxx bcResponse.nonce:%v\n", nonce)
+	logger.Info("xxx bcResponse.nonce:", nonce)
 	timestamp := bcResponse.Timestamp
-	logger.Info("xxx bcResponse.timestamp:%v\n", timestamp)
+	logger.Info("xxx bcResponse.timestamp:", timestamp)
 	sign := bcResponse.Sign
-	logger.Info("xxx bcResponse.sign:%v\n", sign)
+	logger.Info("xxx bcResponse.sign:", sign)
 
 	mirrormsg, err := json.Marshal(bcResponse)
 	logger.Info("xxx doCall() mirrormsg:", string(mirrormsg))

@@ -34,15 +34,15 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	}
 
 	jsonrpc := rpcRequest.JSONRPC
-	logger.Info("xxx rpcRequest.jsonrpc:%v\n", jsonrpc)
+	logger.Info("xxx rpcRequest.jsonrpc:", jsonrpc)
 	method := rpcRequest.Method
-	logger.Info("xxx rpcRequest.Method:%v\n", method)
+	logger.Info("xxx rpcRequest.Method:", method)
 
 	f := rpcRequest.Params
 	key := f.(map[string]interface{})["key"].(string)
-	logger.Info("rpcRequest.Params.Key:%v\n", key)
+	logger.Info("rpcRequest.Params.Key:", key)
 	channel := f.(map[string]interface{})["channel"].(string)
-	logger.Info("rpcRequest.Params.Channel:%v\n", channel)
+	logger.Info("rpcRequest.Params.Channel:", channel)
 	rpcResp := handler.Excute(postdata)
 	err = c.WriteMessage(messageType, rpcResp)
 	if err != nil {

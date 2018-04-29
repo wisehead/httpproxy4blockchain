@@ -64,34 +64,35 @@ func main() {
 
 	//Message 1:source-state
 	request := &RPCRequest{
-		Method: "source-state",
+		Method: "source-statexxxx",
 		Params: map[string]interface{}{
-			"key":     "mytest/6",
+			"key":     "mytest/1",
 			"channel": "vvtrip",
 		},
 		ID:      0,
 		JSONRPC: "2.0",
 	}
 
-	//Message 2:source-transactions
 	/*
+		//Message 2:source-transactions
 		request := &RPCRequest{
 			Method: "source-transactions",
 			Params: map[string]interface{}{
-				"key":     "mytest/1",
+				"key":     "mytest/6",
 				"channel": "vvtrip",
 			},
 			ID:      0,
 			JSONRPC: "2.0",
 		}
 	*/
+
 	/*
 		//Message 3:source-transaction
 		request := &RPCRequest{
 			Method: "source-transaction",
 			Params: map[string]interface{}{
-				"key":     "mytest/1",
-				"tx_id":   "b11a94dd1142559380d1a715da39b6899ed55511f7e23164a50159e4dad4f936",
+				"key":     "mytest/6",
+				"tx_id":   "5f61e09ca61b6ec3db86bbb21134c65d8419f3e32df334e802224b1dd1fcceaf",
 				"channel": "vvtrip",
 			},
 			ID:      0,
@@ -105,13 +106,14 @@ func main() {
 		ID      uint        `json:"id"` //chenhui
 		JSONRPC string      `json:"jsonrpc"`
 	}*/
+
 	/*
 		//message 4: source-get-binary
 		request := &RPCRequest{
 			Method: "source-get-binary",
 			Params: map[string]interface{}{
 				"channel": "vvtrip",
-				"key":     "test/my1.txt",
+				"key":     "test/my2.pic",
 			},
 			JSONRPC: "2.0",
 			ID:      0,
