@@ -67,7 +67,7 @@ func main() {
 		request := &RPCRequest{
 			Method: "source-state",
 			Params: map[string]interface{}{
-				"key":     "mytest/1",
+				"key":     "mytest/6",
 				"channel": "vvtrip",
 			},
 			ID:      0,
@@ -80,7 +80,7 @@ func main() {
 		request := &RPCRequest{
 			Method: "source-transactions",
 			Params: map[string]interface{}{
-				"key":     "mytest/7",
+				"key":     "mytest/1",
 				"channel": "vvtrip",
 			},
 			ID:      0,
@@ -101,6 +101,7 @@ func main() {
 			JSONRPC: "2.0",
 		}
 	*/
+
 	/*type RPCRequest struct {
 		Method  string      `json:"method"`
 		Params  interface{} `json:"params,omitempty"`
@@ -113,8 +114,7 @@ func main() {
 		Method: "source-get-binary",
 		Params: map[string]interface{}{
 			"channel": "vvtrip",
-			"key":     "test/my2.picxxxx",
-			//"key":     "test/my2.pic",
+			"key":     "test/my2.pic",
 		},
 		JSONRPC: "2.0",
 		ID:      0,

@@ -29,7 +29,7 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	var rpcRequest jsonrpc.RPCRequest
 	err := json.Unmarshal(postdata, &rpcRequest)
 	if err != nil {
-		logger.Info("Unmarshal:", err)
+		logger.Error("Unmarshal:", err)
 		return err
 	}
 
@@ -43,10 +43,28 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	logger.Info("rpcRequest.Params.Key:", key)
 	channel := f.(map[string]interface{})["channel"].(string)
 	logger.Info("rpcRequest.Params.Channel:", channel)
-	rpcResp := handler.Excute(postdata)
+	rpcResp, err := handler.Excute(postdata)
+
+	//chenhui
+	if err != nil || rpcResp == nil {
+		errorX := make(map[string]interface{})
+		errorX["code"] = 0
+		errorX["message"] = err.Error()
+
+		response := make(map[string]interface{})
+		response["id"] = 0
+		response["jsonrpc"] = "2.0"
+		response["error"] = errorX
+		rpcResp, err = json.Marshal(response)
+		if err != nil {
+			logger.Error("handleMsg() Marshal :", err)
+			return err
+		}
+	}
+
 	err = c.WriteMessage(messageType, rpcResp)
 	if err != nil {
-		logger.Info("write:", err)
+		logger.Error("handleMsg() write:", err)
 		return err
 	}
 	return nil
@@ -55,21 +73,21 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		logger.Info("upgrade:", err)
+		logger.Error("upgrade:", err)
 		return
 	}
 	defer c.Close()
 	for {
 		mt, message, err := c.ReadMessage()
 		if err != nil {
-			logger.Info("read:", err)
+			logger.Error("read:", err)
 			break
 		}
 		logger.Info("recv: %s", message)
 		//err = c.WriteMessage(mt, message)
 		err = handleMsg(c, mt, message)
 		if err != nil {
-			logger.Info("handle:", err)
+			logger.Error("handle:", err)
 			break
 		}
 	}
@@ -94,7 +112,7 @@ func main() {
 
 	defer logger.Init("LoggerProxy", *verbose, true, lf).Close()
 
-	logger.Info("starting Blockchain proxy!...:", logPath)
+	logger.Info("starting Blockchain proxy...!logPath is: ", logPath)
 
 	log.SetFlags(0)
 	http.HandleFunc("/echo", echo)
