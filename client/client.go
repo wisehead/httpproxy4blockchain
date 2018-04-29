@@ -62,23 +62,25 @@ func main() {
 		}
 	}()
 
-	//Message 1:source-state
-	request := &RPCRequest{
-		Method: "source-statexxxx",
-		Params: map[string]interface{}{
-			"key":     "mytest/1",
-			"channel": "vvtrip",
-		},
-		ID:      0,
-		JSONRPC: "2.0",
-	}
+	/*
+		//Message 1:source-state
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "mytest/1",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 
 	/*
 		//Message 2:source-transactions
 		request := &RPCRequest{
 			Method: "source-transactions",
 			Params: map[string]interface{}{
-				"key":     "mytest/6",
+				"key":     "mytest/7",
 				"channel": "vvtrip",
 			},
 			ID:      0,
@@ -91,7 +93,7 @@ func main() {
 		request := &RPCRequest{
 			Method: "source-transaction",
 			Params: map[string]interface{}{
-				"key":     "mytest/6",
+				"key":     "mytest/5",
 				"tx_id":   "5f61e09ca61b6ec3db86bbb21134c65d8419f3e32df334e802224b1dd1fcceaf",
 				"channel": "vvtrip",
 			},
@@ -99,7 +101,6 @@ func main() {
 			JSONRPC: "2.0",
 		}
 	*/
-
 	/*type RPCRequest struct {
 		Method  string      `json:"method"`
 		Params  interface{} `json:"params,omitempty"`
@@ -107,18 +108,17 @@ func main() {
 		JSONRPC string      `json:"jsonrpc"`
 	}*/
 
-	/*
-		//message 4: source-get-binary
-		request := &RPCRequest{
-			Method: "source-get-binary",
-			Params: map[string]interface{}{
-				"channel": "vvtrip",
-				"key":     "test/my2.pic",
-			},
-			JSONRPC: "2.0",
-			ID:      0,
-		}
-	*/
+	//message 4: source-get-binary
+	request := &RPCRequest{
+		Method: "source-get-binary",
+		Params: map[string]interface{}{
+			"channel": "vvtrip",
+			"key":     "test/my2.picxxxx",
+			//"key":     "test/my2.pic",
+		},
+		JSONRPC: "2.0",
+		ID:      0,
+	}
 
 	//1.seed info
 	qulityInfoX := make(map[string]interface{})

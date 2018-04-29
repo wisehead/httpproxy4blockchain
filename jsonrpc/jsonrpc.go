@@ -239,7 +239,7 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 	h := md5.New()
 	h.Write([]byte(data_orig)) // 需要加密的字符串为 123456
 	cipherStr := h.Sum(nil)
-	logger.Info("xxx Call() sign is:%s\n", hex.EncodeToString(cipherStr)) // 输出加密结果
+	logger.Info("xxx Call() sign is:", hex.EncodeToString(cipherStr)) // 输出加密结果
 
 	bcRequest := &BCRequest{
 		Data:  string(body),
