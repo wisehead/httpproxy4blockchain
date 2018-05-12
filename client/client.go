@@ -27,10 +27,10 @@ type RPCRequest struct {
 }
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
-var addr = flag.String("addr", "127.0.0.1:8080", "http service address")
+var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
 
 //101.201.36.66
-//var addr = flag.String("addr", "101.201.36.66:8080", "http service address")
+//var addr = flag.String("addr", "101.201.36.66:8380", "http service address")
 
 func main() {
 	flag.Parse()
@@ -62,18 +62,16 @@ func main() {
 		}
 	}()
 
-	/*
-		//Message 1:source-state
-		request := &RPCRequest{
-			Method: "source-state",
-			Params: map[string]interface{}{
-				"key":     "mytest/6",
-				"channel": "vvtrip",
-			},
-			ID:      0,
-			JSONRPC: "2.0",
-		}
-	*/
+	//Message 1:source-state
+	request := &RPCRequest{
+		Method: "source-state",
+		Params: map[string]interface{}{
+			"key":     "mytest/4",
+			"channel": "vvtrip",
+		},
+		ID:      0,
+		JSONRPC: "2.0",
+	}
 
 	/*
 		//Message 2:source-transactions
@@ -101,7 +99,6 @@ func main() {
 			JSONRPC: "2.0",
 		}
 	*/
-
 	/*type RPCRequest struct {
 		Method  string      `json:"method"`
 		Params  interface{} `json:"params,omitempty"`
@@ -109,17 +106,19 @@ func main() {
 		JSONRPC string      `json:"jsonrpc"`
 	}*/
 
-	//message 4: source-get-binary
-	request := &RPCRequest{
-		Method: "source-get-binary",
-		Params: map[string]interface{}{
-			"channel": "vvtrip",
-			"key":     "test/my2.pic",
-		},
-		JSONRPC: "2.0",
-		ID:      0,
-	}
-
+	/*
+		//message 4: source-get-binary
+		request := &RPCRequest{
+			Method: "source-get-binary",
+			Params: map[string]interface{}{
+				"channel": "vvtrip",
+				//"key":     "test/my2.pic",
+				"key": "test/my1.txt",
+			},
+			JSONRPC: "2.0",
+			ID:      0,
+		}
+	*/
 	//1.seed info
 	qulityInfoX := make(map[string]interface{})
 	qulityInfoX["unpolishedRiceRate"] = "84.1%"
