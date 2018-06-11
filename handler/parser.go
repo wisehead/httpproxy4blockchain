@@ -1,6 +1,15 @@
 package handler
 
 /*
+批次信息
+第一批次，该批次总生产量5000份
+批次及产量：第一批次，10000斤（每斤一个最小包装单位）
+*/
+type BatchInformationType struct {
+	BatchNumber string `json:"BatchNumber"` //精米率75.7%
+}
+
+/*
 一、种子信息：
 */
 type QulityType struct {
@@ -73,33 +82,36 @@ type OrganicCertificationOfBaseType struct {
 
 /*四、检验报告*/
 type InspectionReportType struct {
-	SampleName                        string            `json:"SampleName"`                        //样品名称
-	ModelSpecification                string            `json:"ModelSpecification"`                //型号规格
-	SampleNumber                      string            `json:"SampleNumber"`                      //样品编号
-	trademark                         string            `json:"trademark"`                         //商标
-	InspectionUnit                    string            `json:"InspectionUnit"`                    //送检单位
-	InspectionCategory                string            `json:"InspectionCategory"`                //检验类别
-	ProductionUnit                    string            `json:"ProductionUnit"`                    //生产单位
-	SampleGradeAndState               string            `json:"SampleGradeAndState"`               //样品等级、状态
-	SamplingSite                      string            `json:"SamplingSite"`                      //抽样地点
-	DateToSample                      string            `json:"DateToSample"`                      //到样日期
-	SampleQuantity                    string            `json:"SampleQuantity"`                    //样品数量
-	SampleMaker                       string            `json:"SampleMaker"`                       //送样者
-	SamplingBase                      string            `json:"SamplingBase"`                      //抽样基数
-	OriginalNumberOrDateOfProduction  string            `json:"OriginalNumberOrDateOfProduction"`  //原编号或生产日期
-	InspectionBasis                   string            `json:"InspectionBasis"`                   //检验依据
-	InspectionProject                 string            `json:"InspectionProject"`                 //检验项目
-	MainInstrumentsUsed               string            `json:"MainInstrumentsUsed"`               //所用主要仪器
-	ExperimentalEnvironmentConditions string            `json:"ExperimentalEnvironmentConditions"` //实验环境条件
-	InspectionConclusion              string            `json:"InspectionConclusion"`              //检验结论
-	Remarks                           string            `json:"Remarks"`                           //备注
-	Approver                          string            `json:"Approver"`                          //批准人
-	DateOfApproval                    string            `json:"DateOfApproval"`                    //批准日期
-	Auditor                           string            `json:"Auditor"`                           //审核人
-	DateOfAudit                       string            `json:"DateOfAudit"`                       //审核日期
-	TabulatingPerson                  string            `json:"TabulatingPerson"`                  //制表人
-	DateOfTabulation                  string            `json:"DateOfTabulation"`                  //制表日期
+	SampleName                        string            `json:"sampleName"`                        //样品名称
+	ModelSpecification                string            `json:"modelSpecification"`                //型号规格
+	SampleNumber                      string            `json:"sampleNumber"`                      //样品编号
+	Trademark                         string            `json:"trademark"`                         //商标
+	InspectionUnit                    string            `json:"inspectionUnit"`                    //送检单位
+	InspectionCategory                string            `json:"inspectionCategory"`                //检验类别
+	ProductionUnit                    string            `json:"productionUnit"`                    //生产单位
+	SampleGradeAndState               string            `json:"sampleGradeAndState"`               //样品等级、状态
+	SamplingSite                      string            `json:"samplingSite"`                      //抽样地点
+	DateToSample                      string            `json:"dateToSample"`                      //到样日期
+	SampleQuantity                    string            `json:"sampleQuantity"`                    //样品数量
+	SampleMaker                       string            `json:"sampleMaker"`                       //送样者
+	SamplingBase                      string            `json:"samplingBase"`                      //抽样基数
+	OriginalNumberOrDateOfProduction  string            `json:"originalNumberOrDateOfProduction"`  //原编号或生产日期
+	InspectionBasis                   string            `json:"inspectionBasis"`                   //检验依据
+	InspectionProject                 string            `json:"inspectionProject"`                 //检验项目
+	MainInstrumentsUsed               string            `json:"mainInstrumentsUsed"`               //所用主要仪器
+	ExperimentalEnvironmentConditions string            `json:"experimentalEnvironmentConditions"` //实验环境条件
+	InspectionConclusion              string            `json:"inspectionConclusion"`              //检验结论
+	Remarks                           string            `json:"remarks"`                           //备注
+	Approver                          string            `json:"approver"`                          //批准人
+	DateOfApproval                    string            `json:"dateOfApproval"`                    //批准日期
+	Auditor                           string            `json:"auditor"`                           //审核人
+	DateOfAudit                       string            `json:"dateOfAudit"`                       //审核日期
+	TabulatingPerson                  string            `json:"tabulatingPerson"`                  //制表人
+	DateOfTabulation                  string            `json:"dateOfTabulation"`                  //制表日期
 	Items                             []ProductItemType `json:"items"`                             //详细指标
+	Picture1Cover                     string            `json:"picture1Cover"`                     //封面图片
+	PictureBaseSoil                   string            `json:"pictureBaseSoil"`                   //基地土壤图片
+	PictureIrrigatedWaterSource       string            `json:"pictureBaseSoil"`                   //灌溉水源图片
 }
 
 type ProductItemType struct {
@@ -118,30 +130,27 @@ type PatentInfoType struct {
 }
 type PatentItemType struct {
 	PatentName              string `json:"patentName"`              //专利名称
-	PatentCertificateNumber string `json:"PatentCertificateNumber"` //专利证书编号
-	PictureName             string `json:"PictureName"`             //专利证书图片
+	PatentCertificateNumber string `json:"patentCertificateNumber"` //专利证书编号
+	PictureName             string `json:"pictureName"`             //专利证书图片
 }
 
-/*5.土壤检测报告（数据辛苦从图片中提取即可）*/
-type SoilCheckReport struct {
-	Items []SoilCheckReportItem `json:"items"`
+/*六、留胚率、完整度检测报告*/
+type DetectionReportOfEmbryoRateAndIntegrityType struct {
+	Picture1 string `json:"picture1"` //图片1
+	Picture2 string `json:"picture2"` //图片2
+	Picture3 string `json:"picture3"` //图片3
+	Picture4 string `json:"picture4"` //图片4
 }
 
-type SoilCheckReportItem struct {
-	SmapleId                 string `json:"smapleId"`
-	SampleInspectionProject  string `json:"sampleInspectionProject"`
-	SoilUnit                 string `json:"soilUnit"`
-	SoilIndex                string `json:"soilIndex"`
-	SoilMeasuredData         string `json:"soilMeasuredData"`
-	SampleNumDetectionLimit  string `json:"sampleNumDetectionLimit"`
-	LN166872SingleConclusion string `json:"ln166872SingleConclusion"`
-	LN166872DetectionBasis   string `json:"ln166872DetectionBasis"`
+/*七、位置信息*/
+type PositionInformationType struct {
+	Picture1PlantingBaseLocation   string `json:"picture1PlantingBaseLocation"`   //种植基地
+	Picture2StorageBaseLocation    string `json:"picture2StorageBaseLocation"`    //仓储基地
+	Picture3ProcessingBaseLocation string `json:"picture3ProcessingBaseLocation"` //加工基地
 }
 
-type OneRecord struct {
-	SeedInfoData                        SeedInfo                        `json:"seedInfoData"`
-	BiologicalOrganicFertilizerInfoData BiologicalOrganicFertilizerInfo `json:"biologicalOrganicFertilizerInfoData"`
-	OrganicAuthenticationInfoData       OrganicAuthenticationInfo       `json:"organicAuthenticationInfoData"`
-	ProductInfomationData               ProductInfomation               `json:"productInfomationData"`
-	SoilCheckReportData                 SoilCheckReport                 `json:"soilCheckReportData"`
+/*八、产品出厂检测报告*/
+type ProductInspectionReportType struct {
+	Picture1 string `json:"picture1"` //图片1
+	Picture2 string `json:"picture2"` //图片2
 }
