@@ -19,6 +19,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+//Version v0.81
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
 

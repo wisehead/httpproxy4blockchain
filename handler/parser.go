@@ -6,7 +6,16 @@ package handler
 批次及产量：第一批次，10000斤（每斤一个最小包装单位）
 */
 type BatchInformationType struct {
-	BatchNumber string `json:"BatchNumber"` //精米率75.7%
+	BatchNumber                             string                                      `json:"batchNumber"`
+	BatchOutput                             string                                      `json:"batchOutput"`
+	SeedInfo                                SeedInfoType                                `json:"seedInfo"`                                //一、种子信息：
+	BiologicalOrganicFertilizer             BiologicalOrganicFertilizerType             `json:"biologicalOrganicFertilizer"`             //二、生物有机肥
+	OrganicCertificationOfBase              OrganicCertificationOfBaseType              `json:"organicCertificationOfBase"`              //三、基地有机认证
+	InspectionReport                        InspectionReportType                        `json:"inspectionReport"`                        //四、检验报告
+	PatentInfo                              PatentInfoType                              `json:"patentInfo"`                              //五、加工工艺专利技术证书
+	DetectionReportOfEmbryoRateAndIntegrity DetectionReportOfEmbryoRateAndIntegrityType `json:"detectionReportOfEmbryoRateAndIntegrity"` //六、留胚率、完整度检测报告
+	PositionInformation                     PositionInformationType                     `json:"positionInformation"`                     //七、位置信息
+	ProductInspectionReport                 ProductInspectionReportType                 `json:"productInspectionReport"`                 //八、产品出厂检测报告
 }
 
 /*
@@ -22,6 +31,7 @@ type QulityType struct {
 }
 
 type QualityExecutionStandardType struct {
+	StandardName          string `json:"standardName"`          //纯度99%
 	Purity                string `json:"purity"`                //纯度99%
 	Cleanliness           string `json:"cleanliness"`           //净度98.0%
 	GerminationPercentage string `json:"germinationPercentage"` //发芽率85%
@@ -111,7 +121,7 @@ type InspectionReportType struct {
 	Items                             []ProductItemType `json:"items"`                             //详细指标
 	Picture1Cover                     string            `json:"picture1Cover"`                     //封面图片
 	PictureBaseSoil                   string            `json:"pictureBaseSoil"`                   //基地土壤图片
-	PictureIrrigatedWaterSource       string            `json:"pictureBaseSoil"`                   //灌溉水源图片
+	PictureIrrigatedWaterSource       string            `json:"pictureIrrigatedWaterSource"`       //灌溉水源图片
 }
 
 type ProductItemType struct {
