@@ -232,7 +232,8 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 	str := strconv.Quote(string(body))
 	logger.Info("Call() str:" + str)
 
-	data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540659"
+	//data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540659"
+	data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540600"
 	logger.Info("Call() :data_orig is: ", data_orig)
 
 	h := md5.New()
@@ -273,7 +274,8 @@ func (client *rpcClient) newRequest(req interface{}) (*http.Request, error) {
 	}
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("X-Api-Key", "7a79d668d61993119516d7c898aa072bb971467752e3e7bb2751cc474080dbdb")
+	//request.Header.Set("X-Api-Key", "7a79d668d61993119516d7c898aa072bb971467752e3e7bb2751cc474080dbdb")
+	request.Header.Set("X-Api-Key", "7a79d668d61993119516d7c898aa072bb971467752e3e7bb2751cc474080db00")
 
 	// set default headers first, so that even content type and accept can be overwritten
 	for k, v := range client.customHeaders {

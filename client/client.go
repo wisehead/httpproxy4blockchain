@@ -19,6 +19,7 @@ import (
 )
 
 //Version v0.81
+//change suyuan chain test env.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -63,17 +64,28 @@ func main() {
 			log.Printf("recv: %s", message)
 		}
 	}()
-
-	//Message 1:source-state
+	//Message 5:source-state, suyuan test chain
 	request := &RPCRequest{
 		Method: "source-state",
 		Params: map[string]interface{}{
-			"key":     "mytest/1",
-			"channel": "vvtrip",
+			"key":     "113010215022918061601",
+			"channel": "notaryinfotestchannel",
 		},
 		ID:      0,
 		JSONRPC: "2.0",
 	}
+	/*
+		//Message 1:source-state
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "mytest/1",
+				"channel": "vvtrip",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 
 	/*
 		//Message 2:source-transactions
@@ -236,7 +248,7 @@ func main() {
 	organicCertificationOfBaseX := make(map[string]interface{})
 	organicCertificationOfBaseX["certificateNumber"] = "227OP1600099"
 	organicCertificationOfBaseX["certificationBasis"] = certificationBasisX
-	organicCertificationOfBaseX["pictureName"] = "suyuan1/3.OrganicCertificationOfBaseType.jpg"
+	organicCertificationOfBaseX["pictureName"] = "suyuan1/1.youji.png"
 
 	/*四、检验报告*/
 	/*
@@ -647,7 +659,7 @@ func main() {
 
 	productItemX37 := make(map[string]interface{})
 	productItemX37["inspectionProject"] = "黄曲霉毒素B1"
-	productItemX37["measurementUnit"] = "μg/kg"
+	productItemX37["measurementUnit"] = "ug/kg"
 	productItemX37["standardRequirements"] = "<=5.0"
 	productItemX37["testResults"] = "<5.0"
 	productItemX37["methodDetectionLimit"] = "——"
@@ -717,9 +729,9 @@ func main() {
 	inspectionReportX["tabulatingPerson"] = "盛慧"
 	inspectionReportX["dateOfTabulation"] = "2017-07-25"
 	inspectionReportX["items"] = productInfomationX
-	inspectionReportX["picture1Cover"] = "pic1"
-	inspectionReportX["pictureBaseSoil"] = "pic2"
-	inspectionReportX["pictureIrrigatedWaterSource"] = "pic3"
+	inspectionReportX["picture1Cover"] = "suyuan1/2.jianyan1.png"
+	inspectionReportX["pictureBaseSoil"] = "suyuan1/3.jianyan2.png"
+	inspectionReportX["pictureIrrigatedWaterSource"] = "suyuan1/4.jianyan3.png"
 
 	/*五、加工工艺专利技术证书*/
 	/*
@@ -737,25 +749,25 @@ func main() {
 	patentItemX1 := make(map[string]interface{})
 	patentItemX1["patentName"] = "稻谷碾白机"
 	patentItemX1["patentCertificateNumber"] = "第1978111号"
-	patentItemX1["pictureName"] = "pic1"
+	patentItemX1["pictureName"] = "suyuan1/5.zhuanli1.png"
 	patentInfoX = append(patentInfoX, patentItemX1)
 
 	patentItemX2 := make(map[string]interface{})
 	patentItemX2["patentName"] = "胚芽米精磨机"
 	patentItemX2["patentCertificateNumber"] = "第2619488号"
-	patentItemX2["pictureName"] = "pic2"
+	patentItemX2["pictureName"] = "suyuan1/6.zhuanli2.png"
 	patentInfoX = append(patentInfoX, patentItemX2)
 
 	patentItemX3 := make(map[string]interface{})
 	patentItemX3["patentName"] = "一种双室胚芽米碾米机"
 	patentItemX3["patentCertificateNumber"] = "第6479912号"
-	patentItemX3["pictureName"] = "pic3"
+	patentItemX3["pictureName"] = "suyuan1/7.zhuanli3.png"
 	patentInfoX = append(patentInfoX, patentItemX3)
 
 	patentItemX4 := make(map[string]interface{})
 	patentItemX4["patentName"] = "一种米糠、谷壳粉碎装置"
 	patentItemX4["patentCertificateNumber"] = "第6479920号"
-	patentItemX4["pictureName"] = "pic4"
+	patentItemX4["pictureName"] = "suyuan1/8.zhuanli4.png"
 	patentInfoX = append(patentInfoX, patentItemX4)
 
 	/*六、留胚率、完整度检测报告*/
@@ -768,10 +780,10 @@ func main() {
 	   }
 	*/
 	detectionReportOfEmbryoRateAndIntegrityX := make(map[string]interface{})
-	detectionReportOfEmbryoRateAndIntegrityX["picture1"] = "pic1"
-	detectionReportOfEmbryoRateAndIntegrityX["picture2"] = "pic2"
-	detectionReportOfEmbryoRateAndIntegrityX["picture3"] = "pic3"
-	detectionReportOfEmbryoRateAndIntegrityX["picture4"] = "pic4"
+	detectionReportOfEmbryoRateAndIntegrityX["picture1"] = "suyuan1/9.liupeilv1.png"
+	detectionReportOfEmbryoRateAndIntegrityX["picture2"] = "suyuan1/10.liupeilv2.png"
+	detectionReportOfEmbryoRateAndIntegrityX["picture3"] = "suyuan1/11.liupeilv3.png"
+	detectionReportOfEmbryoRateAndIntegrityX["picture4"] = "suyuan1/12.liupeilv4.png"
 
 	/*七、位置信息*/
 	/*
@@ -782,9 +794,9 @@ func main() {
 		}
 	*/
 	positionInformationX := make(map[string]interface{})
-	positionInformationX["picture1PlantingBaseLocation"] = "pic1"
-	positionInformationX["picture2StorageBaseLocation"] = "pic2"
-	positionInformationX["picture3ProcessingBaseLocation"] = "pic3"
+	positionInformationX["picture1PlantingBaseLocation"] = "suyuan1/13.weizhi1.png"
+	positionInformationX["picture2StorageBaseLocation"] = "suyuan1/14.weizhi2.png"
+	positionInformationX["picture3ProcessingBaseLocation"] = "suyuan1/15.weizhi3.png"
 
 	/*八、产品出厂检测报告*/
 	/*
@@ -794,8 +806,8 @@ func main() {
 		}
 	*/
 	productInspectionReportX := make(map[string]interface{})
-	productInspectionReportX["picture1"] = "pic1"
-	productInspectionReportX["picture1"] = "pic2"
+	productInspectionReportX["picture1"] = "suyuan1/16.baogao1.png"
+	productInspectionReportX["picture2"] = "suyuan1/17.baogao2.png"
 
 	//Overall BatchInfo
 	/*

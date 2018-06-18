@@ -196,7 +196,8 @@ func CheckError(err error) {
 //sendJsonrpcRequest is to send request to block chain service.
 func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCResponse, error) {
 	var err error
-	rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
+	//rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
+	rpcClient := jsonrpc.NewClient("https://testnet.ninechain.net/api/v2.1")
 	if rpcClient == nil {
 		logger.Error("sendJsonrpcRequest() pcClient is nil!")
 		return nil, err
@@ -204,9 +205,9 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 
 	var rpcResp *jsonrpc.RPCResponse
 	if method == "source-transaction" {
-		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key, Tx_id: tx_id})
+		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key, Tx_id: tx_id})
 	} else {
-		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "vvtrip", Key: key})
+		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key})
 	}
 
 	if err != nil {
