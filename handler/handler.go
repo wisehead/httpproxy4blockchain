@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
+	"io/ioutil"
 )
 
 //in this part, we try to decouple the whole code by a route-controller structure;
@@ -597,14 +600,20 @@ func handle_big_message(respMsg []byte) ([]byte, error) {
 
 //B_chenhui
 func handle_suyuan_message(respMsg []byte) ([]byte, error) {
-	/*type State_Resp_Msg struct {
-		ID             string `json:"id"`
-		Jianyanxiangmu string `json:"jianyanxiangmu"`
-		Jiliangdanwei  string `json:"jiliangdanwei"`
-		Biaozhunyaoqiu string `json:"biaozhunyaoqiu"`
-		Pic1           string `json:"pic1"`
-		Pic2           string `json:"pic2"`
-	}*/
+	/*
+			type BatchInformationType struct {
+			BatchNumber                             string                                      `json:"batchNumber"`
+			BatchOutput                             string                                      `json:"batchOutput"`
+			SeedInfo                                SeedInfoType                                `json:"seedInfo"`                                //一、种子信息：
+			BiologicalOrganicFertilizer             BiologicalOrganicFertilizerType             `json:"biologicalOrganicFertilizer"`             //二、生物有机肥
+			OrganicCertificationOfBase              OrganicCertificationOfBaseType              `json:"organicCertificationOfBase"`              //三、基地有机认证
+			InspectionReport                        InspectionReportType                        `json:"inspectionReport"`                        //四、检验报告
+			PatentInfo                              PatentInfoType                              `json:"patentInfo"`                              //五、加工工艺专利技术证书
+			DetectionReportOfEmbryoRateAndIntegrity DetectionReportOfEmbryoRateAndIntegrityType `json:"detectionReportOfEmbryoRateAndIntegrity"` //六、留胚率、完整度检测报告
+			PositionInformation                     PositionInformationType                     `json:"positionInformation"`                     //七、位置信息
+			ProductInspectionReport                 ProductInspectionReportType                 `json:"productInspectionReport"`                 //八、产品出厂检测报告
+		}
+	*/
 
 	var rpcRespState = new(RPCResponseState2)
 	err := json.Unmarshal(respMsg, &rpcRespState)
@@ -626,6 +635,59 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	logger.Info("handle_suyuan_message() rpcRespState.batchNumber:", batchNumber)
 	batchOutput := stateRespMsg.BatchOutput
 	logger.Info("handle_suyuan_message() rpcRespState.batchOutput:", batchOutput)
+
+	//1.seedinfo
+	seedInfo := stateRespMsg.SeedInfo
+	grade := seedInfo.Grade
+	logger.Info("handle_suyuan_message() rpcRespState.SeedInfo.grade:", grade)
+
+	//2.BiologicalOrganicFertilizer
+
+	//3.OrganicCertificationOfBase
+	organicCertificationOfBase := stateRespMsg.OrganicCertificationOfBase
+	pic1 := organicCertificationOfBase.PictureName
+	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName:", pic1)
+
+	ff, _ := ioutil.ReadFile(pic1)          //我还是喜欢用这个快速读文件
+	bufstore := make([]byte, 5000000)       //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index := bytes.IndexByte(bufstore, 0)
+	rbyf_pn := bufstore[0:index]
+	_ = ioutil.WriteFile("output2/1.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+
+	stateRespMsg.OrganicCertificationOfBase.PictureName = string(rbyf_pn)
+	pic1x := organicCertificationOfBase.PictureName
+	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName:", pic1x)
+	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName real:", stateRespMsg.OrganicCertificationOfBase.PictureName)
+
+	//4.检测报告，InspectionReport
+	inspectionReport := stateRespMsg.InspectionReport
+	pic2 := inspectionReport.Picture1Cover
+	logger.Info("handle_suyuan_message() rpcRespState.InspectionReport.Picture1Cover:", pic2)
+	ff, _ = ioutil.ReadFile(pic2)           //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	inspectionReport.Picture1Cover = string(bufstore)
+	//pic2x := inspectionReport.Picture1Cover
+	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.Picture1Cover:", pic2x)
+
+	pic3 := inspectionReport.PictureBaseSoil
+	logger.Info("handle_suyuan_message() rpcRespState.InspectionReport.PictureBaseSoil:", pic3)
+	ff, _ = ioutil.ReadFile(pic3)           //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	inspectionReport.PictureBaseSoil = string(bufstore)
+	//pic3x := inspectionReport.PictureBaseSoil
+	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.PictureBaseSoil:", pic3x)
+
+	pic4 := inspectionReport.PictureIrrigatedWaterSource
+	logger.Info("handle_suyuan_message() rpcRespState.InspectionReport.PictureIrrigatedWaterSource:", pic4)
+	ff, _ = ioutil.ReadFile(pic4)           //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	inspectionReport.PictureIrrigatedWaterSource = string(bufstore)
+	//pic4x := inspectionReport.PictureIrrigatedWaterSource
+	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.PictureIrrigatedWaterSource:", pic4x)
 	/*
 		method := "source-get-binary"
 		tx_id := ""
@@ -700,6 +762,12 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 		}
 		logger.Info("handle_big_message() echo the message:", string(respMsg))
 	*/
+	respMsg, err = json.Marshal(stateRespMsg)
+	if err != nil {
+		logger.Error("handle_big_message(): error.....")
+		return nil, err
+	}
+	logger.Info("handle_big_message() echo the message:", string(respMsg))
 	return respMsg, nil
 }
 
@@ -782,12 +850,14 @@ func Excute(message []byte) ([]byte, error) {
 		}
 	}
 	//B_chenhui
+
 	respMsg, err = handle_suyuan_message(respMsg)
 	if err != nil {
 		logger.Error("Excute() handle_suyuan_message error::", err)
 		return nil, err
 	}
 	logger.Info("Excute() echo the message:", string(respMsg))
+
 	//E_chenhui
 	return respMsg, nil
 }

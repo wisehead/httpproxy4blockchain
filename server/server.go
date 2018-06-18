@@ -19,8 +19,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.83
-//add handle_suyuan_message.
+//Version v0.84
+//pic1 ok.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
