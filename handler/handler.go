@@ -28,6 +28,21 @@ type RPCResponseState struct {
 	ID    uint      `json:"id"`
 }
 
+//ResultState is the result strunct.
+type ResultValue struct {
+	Value string `json:"value"`
+}
+
+//RPCResponseState is the strunct for source-state message response.
+type RPCResponseState2 struct {
+	JSONRPC string      `json:"jsonrpc"`
+	Result  ResultValue `json:"result,omitempty"`
+	//Result map[string]interface{} `json:"result,omitempty"`
+	//Result *json.RawMessage `json:"result,omitempty"`
+	Error *RPCError `json:"error,omitempty"`
+	ID    uint      `json:"id"`
+}
+
 type State_Resp_Pic_Msg struct {
 	Pic string `json:"pic"`
 }
@@ -314,6 +329,41 @@ func getPics(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
 	return pic1, pic2, nil
 }
 
+/*
+func getPics2(rpcResp *jsonrpc.RPCResponse) (string, string, error) {
+
+	mirrormsg, err := json.Marshal(rpcResp)
+	if err != nil {
+		logger.Error("getPics2() error:", err.Error())
+		return "", "", err
+	}
+
+	logger.Info("getPics2() mirrormsg:", string(mirrormsg))
+
+	var rpcRespState = new(RPCResponseState)
+	err = json.Unmarshal(mirrormsg, &rpcRespState)
+	if err != nil {
+		logger.Error("getPics2() error:", err.Error())
+		return "", "", err
+	}
+
+	id := rpcRespState.ID
+	logger.Info("getPics2() rpcRespState.id:", id)
+	jsonrpc := rpcRespState.JSONRPC
+	logger.Info("getPics2() rpcRespState.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespState.Result
+	state := rpcresult.State
+	logger.Info("getPics2() rpcRespState.Result.state:", state)
+	var stateRespMsg = new(State_Resp_Msg)
+	err = json.Unmarshal([]byte(state), &stateRespMsg)
+	//don't check error here, since some source-state message might have no pictures.
+	pic1 := stateRespMsg.Pic1
+	logger.Info("getPic2() rpcRespState.pic1:", pic1)
+	pic2 := stateRespMsg.Pic2
+	logger.Info("getPic2() rpcRespState.pic2:", pic2)
+	return pic1, pic2, nil
+}
+*/
 //verifyTransactionMsg is to parse and verify the format of source-state message.
 func verifyTransactionMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
 
@@ -443,12 +493,11 @@ func handle_big_message(respMsg []byte) ([]byte, error) {
 	var rpcRespState = new(RPCResponseState)
 	err := json.Unmarshal(respMsg, &rpcRespState)
 	if err != nil {
-		logger.Error("handle_big_message(): error.....") //chenhui
+		logger.Error("handle_big_message(): error.....")
 		return nil, err
 	}
 
 	id := rpcRespState.ID
-	//logger.Info("xxx Excute() rpcRespState.id:", id)
 	logger.Info("handle_big_message() rpcRespState.id:", id)
 	jsonrpc := rpcRespState.JSONRPC
 	logger.Info("handle_big_message() rpcRespState.jsonrpc:", jsonrpc)
@@ -506,15 +555,15 @@ func handle_big_message(respMsg []byte) ([]byte, error) {
 	}
 	respMsg, err = json.Marshal(rpcResp)
 	if err != nil {
-		logger.Error("handle_big_message(): error.....") //chenhui
+		logger.Error("handle_big_message(): error.....")
 		return nil, err
 	}
-	logger.Info("Excute() echo the message:", string(respMsg))
+	logger.Info("handle_big_message() echo the message:", string(respMsg))
 
 	var rpcRespPic2 = new(RPCResponsePic)
 	err = json.Unmarshal(respMsg, &rpcRespPic2)
 	if err != nil {
-		logger.Error("handle_big_message(): error.....") //chenhui
+		logger.Error("handle_big_message(): error.....")
 		return nil, err
 	}
 	rpcresult3 := rpcRespPic2.Result
@@ -545,6 +594,116 @@ func handle_big_message(respMsg []byte) ([]byte, error) {
 	logger.Info("handle_big_message() echo the message:", string(respMsg))
 	return respMsg, nil
 }
+
+//B_chenhui
+func handle_suyuan_message(respMsg []byte) ([]byte, error) {
+	/*type State_Resp_Msg struct {
+		ID             string `json:"id"`
+		Jianyanxiangmu string `json:"jianyanxiangmu"`
+		Jiliangdanwei  string `json:"jiliangdanwei"`
+		Biaozhunyaoqiu string `json:"biaozhunyaoqiu"`
+		Pic1           string `json:"pic1"`
+		Pic2           string `json:"pic2"`
+	}*/
+
+	var rpcRespState = new(RPCResponseState2)
+	err := json.Unmarshal(respMsg, &rpcRespState)
+	if err != nil {
+		logger.Error("handle_suyuan_message(): error.....")
+		return nil, err
+	}
+
+	id := rpcRespState.ID
+	logger.Info("handle_suyuan_message() rpcRespState.id:", id)
+	jsonrpc := rpcRespState.JSONRPC
+	logger.Info("handle_suyuan_message() rpcRespState.jsonrpc:", jsonrpc)
+	rpcresult := rpcRespState.Result
+	value := rpcresult.Value
+	logger.Info("handle_suyuan_message() rpcRespState.Result.state:", value)
+	var stateRespMsg = new(BatchInformationType)
+	json.Unmarshal([]byte(value), &stateRespMsg)
+	batchNumber := stateRespMsg.BatchNumber
+	logger.Info("handle_suyuan_message() rpcRespState.batchNumber:", batchNumber)
+	batchOutput := stateRespMsg.BatchOutput
+	logger.Info("handle_suyuan_message() rpcRespState.batchOutput:", batchOutput)
+	/*
+		method := "source-get-binary"
+		tx_id := ""
+		rpcResp, err := sendJsonrpcRequest(method, pic1, tx_id)
+		if err != nil {
+			logger.Error("handle_suyuan_message():sendJsonrpcRequest error.....")
+			return nil, err
+		}
+		respMsg, err = json.Marshal(rpcResp)
+		if err != nil {
+			logger.Error("handle_suyuan_message(): error.....")
+			return nil, err
+		}
+
+		logger.Info("handle_suyuan_message() echo the message:", string(respMsg))
+		var rpcRespPic = new(RPCResponsePic)
+		err = json.Unmarshal(respMsg, &rpcRespPic)
+		if err != nil {
+			logger.Error("handle_suyuan_message(): error.....")
+			return nil, err
+		}
+
+		rpcresult2 := rpcRespPic.Result
+		pic1_obj := rpcresult2.Pic
+		logger.Info("handle_suyuan_message() rpcRespState.Result.pic1_obj:", pic1_obj)
+
+		logger.Info("handle_suyuan_message() pic2:", pic2)
+		method = "source-get-binary"
+		tx_id = ""
+		rpcResp, err = sendJsonrpcRequest(method, pic2, tx_id)
+		if err != nil {
+			logger.Error("handle_suyuan_message(): error.....")
+			return nil, err
+		}
+		respMsg, err = json.Marshal(rpcResp)
+		if err != nil {
+			logger.Error("handle_suyuan_message(): error.....")
+			return nil, err
+		}
+		logger.Info("handle_suyuan_message() echo the message:", string(respMsg))
+
+		var rpcRespPic2 = new(RPCResponsePic)
+		err = json.Unmarshal(respMsg, &rpcRespPic2)
+		if err != nil {
+			logger.Error("handle_suyuan_message(): error.....")
+			return nil, err
+		}
+		rpcresult3 := rpcRespPic2.Result
+		pic2_obj := rpcresult3.Pic
+		logger.Info("handle_suyuan_message() rpcRespState.Result.pic2_obj:", pic2_obj)
+
+		stateX := make(map[string]interface{})
+		stateX["pic1"] = pic1_obj
+		stateX["pic2"] = pic2_obj
+		stateX["id"] = stateId
+		stateX["jianyanxiangmu"] = jianyanxiangmu
+		stateX["jiliangdanwei"] = jiliangdanwei
+		stateX["biaozhunyaoqiu"] = biaozhunyaoqiu
+
+		resultX := make(map[string]interface{})
+		resultX["state"] = stateX
+
+		response := make(map[string]interface{})
+		response["id"] = 0
+		response["jsonrpc"] = "2.0"
+		response["result"] = resultX
+
+		respMsg, err = json.Marshal(response)
+		if err != nil {
+			logger.Error("handle_big_message(): error.....")
+			return nil, err
+		}
+		logger.Info("handle_big_message() echo the message:", string(respMsg))
+	*/
+	return respMsg, nil
+}
+
+//E_chenhui
 
 //Excute is the function that each Controller needs to implement.
 func Excute(message []byte) ([]byte, error) {
@@ -622,6 +781,13 @@ func Excute(message []byte) ([]byte, error) {
 			logger.Info("Excute() echo the message:", string(respMsg))
 		}
 	}
-
+	//B_chenhui
+	respMsg, err = handle_suyuan_message(respMsg)
+	if err != nil {
+		logger.Error("Excute() handle_suyuan_message error::", err)
+		return nil, err
+	}
+	logger.Info("Excute() echo the message:", string(respMsg))
+	//E_chenhui
 	return respMsg, nil
 }

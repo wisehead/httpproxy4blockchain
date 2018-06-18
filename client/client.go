@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.81
-//change suyuan chain test env.
+//Version v0.83
+//add handle_suyuan_message.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
