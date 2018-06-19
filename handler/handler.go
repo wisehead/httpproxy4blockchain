@@ -651,6 +651,7 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	ff, _ := ioutil.ReadFile(pic1)          //我还是喜欢用这个快速读文件
 	bufstore := make([]byte, 5000000)       //数据缓存
 	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	//_ = ioutil.WriteFile("output2/1.full.txt", bufstore, 0666) //直接写入到文件就ok完活了。
 	index := bytes.IndexByte(bufstore, 0)
 	rbyf_pn := bufstore[0:index]
 	_ = ioutil.WriteFile("output2/1.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
@@ -658,7 +659,7 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	stateRespMsg.OrganicCertificationOfBase.PictureName = string(rbyf_pn)
 	pic1x := organicCertificationOfBase.PictureName
 	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName:", pic1x)
-	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName real:", stateRespMsg.OrganicCertificationOfBase.PictureName)
+	//logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName real:", stateRespMsg.OrganicCertificationOfBase.PictureName)
 
 	//4.检测报告，InspectionReport
 	inspectionReport := stateRespMsg.InspectionReport
@@ -667,7 +668,11 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	ff, _ = ioutil.ReadFile(pic2)           //我还是喜欢用这个快速读文件
 	bufstore = make([]byte, 5000000)        //数据缓存
 	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
-	inspectionReport.Picture1Cover = string(bufstore)
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/2.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+
+	stateRespMsg.InspectionReport.Picture1Cover = string(rbyf_pn)
 	//pic2x := inspectionReport.Picture1Cover
 	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.Picture1Cover:", pic2x)
 
@@ -676,7 +681,10 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	ff, _ = ioutil.ReadFile(pic3)           //我还是喜欢用这个快速读文件
 	bufstore = make([]byte, 5000000)        //数据缓存
 	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
-	inspectionReport.PictureBaseSoil = string(bufstore)
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/3.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.InspectionReport.PictureBaseSoil = string(rbyf_pn)
 	//pic3x := inspectionReport.PictureBaseSoil
 	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.PictureBaseSoil:", pic3x)
 
@@ -685,7 +693,116 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	ff, _ = ioutil.ReadFile(pic4)           //我还是喜欢用这个快速读文件
 	bufstore = make([]byte, 5000000)        //数据缓存
 	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
-	inspectionReport.PictureIrrigatedWaterSource = string(bufstore)
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/4.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.InspectionReport.PictureIrrigatedWaterSource = string(rbyf_pn)
+
+	//5、加工工艺专利技术证书,PatentInfo
+	patentInfo := stateRespMsg.PatentInfo
+	patentInfoItems := patentInfo.Items
+	for i := range patentInfoItems {
+		pic5678 := patentInfoItems[i].PictureName
+		logger.Info("handle_suyuan_message() rpcRespState.PatentInfo.PictureName:", pic5678)
+		ff, _ = ioutil.ReadFile(pic5678)        //我还是喜欢用这个快速读文件
+		bufstore = make([]byte, 5000000)        //数据缓存
+		base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+		index = bytes.IndexByte(bufstore, 0)
+		rbyf_pn = bufstore[0:index]
+		//_ = ioutil.WriteFile("output2/5.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+		stateRespMsg.PatentInfo.Items[i].PictureName = string(rbyf_pn)
+	}
+
+	//6、留胚率、完整度检测报告,DetectionReportOfEmbryoRateAndIntegrity
+	detectionReportOfEmbryoRateAndIntegrity := stateRespMsg.DetectionReportOfEmbryoRateAndIntegrity
+	pic9 := detectionReportOfEmbryoRateAndIntegrity.Picture1
+	logger.Info("handle_suyuan_message() rpcRespState.DetectionReportOfEmbryoRateAndIntegrity.Picture1:", pic9)
+	ff, _ = ioutil.ReadFile(pic9)           //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/9.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.DetectionReportOfEmbryoRateAndIntegrity.Picture1 = string(rbyf_pn)
+
+	pic10 := detectionReportOfEmbryoRateAndIntegrity.Picture2
+	logger.Info("handle_suyuan_message() rpcRespState.DetectionReportOfEmbryoRateAndIntegrity.Picture2:", pic10)
+	ff, _ = ioutil.ReadFile(pic10)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/10.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.DetectionReportOfEmbryoRateAndIntegrity.Picture2 = string(rbyf_pn)
+
+	pic11 := detectionReportOfEmbryoRateAndIntegrity.Picture3
+	logger.Info("handle_suyuan_message() rpcRespState.DetectionReportOfEmbryoRateAndIntegrity.Picture3:", pic11)
+	ff, _ = ioutil.ReadFile(pic11)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/11.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.DetectionReportOfEmbryoRateAndIntegrity.Picture3 = string(rbyf_pn)
+
+	pic12 := detectionReportOfEmbryoRateAndIntegrity.Picture4
+	logger.Info("handle_suyuan_message() rpcRespState.DetectionReportOfEmbryoRateAndIntegrity.Picture4:", pic12)
+	ff, _ = ioutil.ReadFile(pic12)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/12.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.DetectionReportOfEmbryoRateAndIntegrity.Picture4 = string(rbyf_pn)
+
+	//7.位置信息,PositionInformation
+	positionInformation := stateRespMsg.PositionInformation
+	pic13 := positionInformation.Picture1PlantingBaseLocation
+	logger.Info("handle_suyuan_message() rpcRespState.positionInformation.Picture1PlantingBaseLocation:", pic13)
+	ff, _ = ioutil.ReadFile(pic13)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/13.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.PositionInformation.Picture1PlantingBaseLocation = string(rbyf_pn)
+
+	pic14 := positionInformation.Picture2StorageBaseLocation
+	logger.Info("handle_suyuan_message() rpcRespState.positionInformation.Picture2StorageBaseLocation:", pic14)
+	ff, _ = ioutil.ReadFile(pic14)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/14.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.PositionInformation.Picture2StorageBaseLocation = string(rbyf_pn)
+
+	pic15 := positionInformation.Picture3ProcessingBaseLocation
+	logger.Info("handle_suyuan_message() rpcRespState.positionInformation.Picture3ProcessingBaseLocation:", pic15)
+	ff, _ = ioutil.ReadFile(pic15)          //我还是喜欢用这个快速读文件
+	bufstore = make([]byte, 5000000)        //数据缓存
+	base64.StdEncoding.Encode(bufstore, ff) // 文件转base64
+	index = bytes.IndexByte(bufstore, 0)
+	rbyf_pn = bufstore[0:index]
+	_ = ioutil.WriteFile("output2/15.jpg.txt", rbyf_pn, 0666) //直接写入到文件就ok完活了。
+	stateRespMsg.PositionInformation.Picture3ProcessingBaseLocation = string(rbyf_pn)
+
+	/*
+			rpcresults := rpcRespTx.Result
+		for i := range rpcresults {
+			//表示遍历数组，而i表示的是数组的下标值，
+			//result[i]表示获得第i个json对象即JSONObject
+			//result[i]通过.字段名称即可获得指定字段的值
+			tx_id := rpcresults[i].Tx_id
+			logger.Info("verifyTransactionsMsg() rpcRespTx.Result.Tx_id:", tx_id)
+			value := rpcresults[i].Value
+			logger.Info("verifyTransactionsMsg() rpcRespTx.Result.Value:", value)
+			timestamp := rpcresults[i].Timestamp
+			nanos := timestamp.Nanos
+			seconds := timestamp.Seconds
+			logger.Info("verifyTransactionMsgs() rpcRespTx.Result.Timestamp.Seconds:", seconds, "Nanos:", nanos)
+		}
+	*/
 	//pic4x := inspectionReport.PictureIrrigatedWaterSource
 	//logger.Info("handle_suyuan_message() rpcRespState.inspectionReport.PictureIrrigatedWaterSource:", pic4x)
 	/*

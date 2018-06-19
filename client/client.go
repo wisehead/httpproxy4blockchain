@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.84
-//pic1 ok.
+//Version v0.85
+//15 pics ok.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
