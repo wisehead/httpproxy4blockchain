@@ -31,6 +31,7 @@ type RPCResponseState struct {
 	ID    uint      `json:"id"`
 }
 
+//B_chenhui
 //ResultState is the result strunct.
 type ResultValue struct {
 	Value string `json:"value"`
@@ -46,6 +47,27 @@ type RPCResponseState2 struct {
 	ID    uint      `json:"id"`
 }
 
+//RPCResponseState is the strunct for source-state message response.
+type RPCResponseState3 struct {
+	JSONRPC string              `json:"jsonrpc"`
+	Result  ReadCountResultType `json:"result,omitempty"`
+	//Result map[string]interface{} `json:"result,omitempty"`
+	//Result *json.RawMessage `json:"result,omitempty"`
+	Error *RPCError `json:"error,omitempty"`
+	ID    uint      `json:"id"`
+}
+
+//{\"value\":\"hahaha3\",\"readcount\":{\"readcount\":11,\"accesstime\":1529403532}}
+type ReadCountInfoType struct {
+	ReadCount  uint64 `json:"readCount"`
+	AccessTime uint64 `json:"accessTime"`
+}
+type ReadCountResultType struct {
+	Value     string            `json:"value"`
+	ReadCount ReadCountInfoType `json:"readCount"`
+}
+
+//E_chenhui
 type State_Resp_Pic_Msg struct {
 	Pic string `json:"pic"`
 }
@@ -599,7 +621,7 @@ func handle_big_message(respMsg []byte) ([]byte, error) {
 }
 
 //B_chenhui
-func handle_suyuan_message(respMsg []byte) ([]byte, error) {
+func handle_suyuan_message(respMsg []byte, readcount uint64, accesstime uint64) ([]byte, error) {
 	/*
 			type BatchInformationType struct {
 			BatchNumber                             string                                      `json:"batchNumber"`
@@ -635,6 +657,9 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	logger.Info("handle_suyuan_message() rpcRespState.batchNumber:", batchNumber)
 	batchOutput := stateRespMsg.BatchOutput
 	logger.Info("handle_suyuan_message() rpcRespState.batchOutput:", batchOutput)
+
+	stateRespMsg.ReadCount = readcount
+	stateRespMsg.AccessTime = accesstime
 
 	//1.seedinfo
 	seedInfo := stateRespMsg.SeedInfo
@@ -881,10 +906,10 @@ func handle_suyuan_message(respMsg []byte) ([]byte, error) {
 	*/
 	respMsg, err = json.Marshal(stateRespMsg)
 	if err != nil {
-		logger.Error("handle_big_message(): error.....")
+		logger.Error("handle_suyuan_message(): error.....")
 		return nil, err
 	}
-	logger.Info("handle_big_message() echo the message:", string(respMsg))
+	logger.Info("handle_suyuan_message() echo the message:", string(respMsg))
 	return respMsg, nil
 }
 
@@ -937,44 +962,59 @@ func Excute(message []byte) ([]byte, error) {
 		logger.Error("Excute() verifyMsg ,", err)
 		return nil, err
 	}
-
-	//check whether there is a picture in the record.
-	var pic1 string
-	var pic2 string
-	if method == "source-state" {
-		pic1, pic2, err = getPics(rpcResp)
+	//B_chenhui
+	if len(key) == 21 {
+		respMsg, err = handle_suyuan_message(respMsg, 0, 0)
 		if err != nil {
-			logger.Error("Excute() getPics error::", err)
+			logger.Error("Excute() handle_suyuan_message error::", err)
 			return nil, err
 		}
+		logger.Info("Excute() echo the message:", string(respMsg))
 	}
-
-	respMsg, err = json.Marshal(rpcResp)
-	if err != nil {
-		logger.Error("Excute() Marshal error::", err)
-		return nil, err
-	}
-
-	logger.Info("Excute() echo the message:", string(respMsg))
-	if method == "source-state" {
-		if pic1 != "" || pic2 != "" {
-			respMsg, err = handle_big_message(respMsg)
-			if err != nil {
-				logger.Error("Excute() handle_big_message error::", err)
-				return nil, err
-			}
-			logger.Info("Excute() echo the message:", string(respMsg))
+	if len(key) == 31 {
+		var rpcRespState = new(RPCResponseState3)
+		err := json.Unmarshal(respMsg, &rpcRespState)
+		if err != nil {
+			logger.Error("Excute(): error.....")
+			return nil, err
 		}
-	}
-	//B_chenhui
 
-	respMsg, err = handle_suyuan_message(respMsg)
-	if err != nil {
-		logger.Error("Excute() handle_suyuan_message error::", err)
-		return nil, err
-	}
-	logger.Info("Excute() echo the message:", string(respMsg))
+		id := rpcRespState.ID
+		logger.Info("Excute() rpcRespState.id:", id)
+		jsonrpc := rpcRespState.JSONRPC
+		logger.Info("Excute() rpcRespState.jsonrpc:", jsonrpc)
+		rpcresult := rpcRespState.Result
+		//value := rpcresult.Value
+		logger.Info("Excute() rpcRespState.Result:", rpcresult)
 
+		value2 := rpcresult.Value
+		logger.Info("Excute() stateRespMsg.Value:", value2)
+		readCountInfo := rpcresult.ReadCount
+		accesstime := readCountInfo.AccessTime
+		logger.Info("Excute() stateRespMsg.ReadCountInfo.AccessTime:", accesstime)
+		readcount := readCountInfo.ReadCount
+		logger.Info("Excute() stateRespMsg.ReadCountInfo.ReadCount:", readcount)
+
+		batchKey := key[0:21]
+		logger.Info("Excute() batchKey is:", batchKey)
+		tx_id = ""
+		rpcResp, err = sendJsonrpcRequest(method, batchKey, tx_id)
+		if err != nil {
+			logger.Error("Excute() Marshal ,", err)
+			return nil, err
+		}
+		respMsg, err = json.Marshal(rpcResp)
+		if err != nil {
+			logger.Error("Excute() Marshal ,", err)
+			return nil, err
+		}
+		respMsg, err = handle_suyuan_message(respMsg, readcount, accesstime)
+		if err != nil {
+			logger.Error("Excute() handle_suyuan_message error::", err)
+			return nil, err
+		}
+		logger.Info("Excute() echo the message:", string(respMsg))
+	}
 	//E_chenhui
 	return respMsg, nil
 }

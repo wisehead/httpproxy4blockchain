@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.85
-//15 pics ok.
+//Version v0.86
+//package info readcount ok.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -64,16 +64,30 @@ func main() {
 			log.Printf("recv: %s", message)
 		}
 	}()
-	//Message 5:source-state, suyuan test chain
+
+	//Message 6:source-state, suyuan test chain, package info
 	request := &RPCRequest{
 		Method: "source-state",
 		Params: map[string]interface{}{
-			"key":     "113010215022918061601",
+			"key":     "1130102150229180616010000000005",
 			"channel": "notaryinfotestchannel",
 		},
 		ID:      0,
 		JSONRPC: "2.0",
 	}
+
+	/*
+		//Message 5:source-state, suyuan test chain, batch info
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "113010215022918061601",
+				"channel": "notaryinfotestchannel",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 	/*
 		//Message 1:source-state
 		request := &RPCRequest{
@@ -836,8 +850,8 @@ func main() {
 	batchInformation["positionInformation"] = positionInformationX
 	batchInformation["productInspectionReport"] = productInspectionReportX
 
-	testRecord, _ := json.Marshal(batchInformation)
-	log.Println("oneRecord is:", string(testRecord))
+	//testRecord, _ := json.Marshal(batchInformation)
+	//log.Println("oneRecord is:", string(testRecord))
 	message, _ := json.Marshal(request)
 	//err = c.WriteMessage(websocket.TextMessage, []byte(message.String()))
 	err = c.WriteMessage(websocket.TextMessage, []byte(message))

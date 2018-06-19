@@ -8,6 +8,8 @@ package handler
 type BatchInformationType struct {
 	BatchNumber                             string                                      `json:"batchNumber"`
 	BatchOutput                             string                                      `json:"batchOutput"`
+	ReadCount                               uint64                                      `json:"readCount"`
+	AccessTime                              uint64                                      `json:"accessTime"`
 	SeedInfo                                SeedInfoType                                `json:"seedInfo"`                                //一、种子信息：
 	BiologicalOrganicFertilizer             BiologicalOrganicFertilizerType             `json:"biologicalOrganicFertilizer"`             //二、生物有机肥
 	OrganicCertificationOfBase              OrganicCertificationOfBaseType              `json:"organicCertificationOfBase"`              //三、基地有机认证
