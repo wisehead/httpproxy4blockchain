@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.92
-//asset-transfer recycle message ok.. start testing asset test chain.
+//Version v0.93
+//asset-transfer buy message ok.. start testing asset test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -89,17 +89,39 @@ func main() {
 		request["jsonrpc"] = "2.0"
 		request["params"] = params
 	*/
+
 	//message 12: asset-transfer: recycle
+	/*
+		var arrsX []map[string]interface{}
+		arrItem1X := make(map[string]interface{})
+		arrItem1X["user"] = "userC"
+		arrItem1X["amount"] = 100000000
+		arrsX = append(arrsX, arrItem1X)
+
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		params["uid"] = "20180625174801001"
+		params["type"] = "recycle"
+		params["arr"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-transfer"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+
+	//message 13: asset-transfer: recycle
 	var arrsX []map[string]interface{}
 	arrItem1X := make(map[string]interface{})
 	arrItem1X["user"] = "userC"
-	arrItem1X["amount"] = 100000000
+	arrItem1X["amount"] = 5000000000
 	arrsX = append(arrsX, arrItem1X)
 
 	params := make(map[string]interface{})
 	params["channel"] = "assettestchannel"
-	params["uid"] = "20180625174801001"
-	params["type"] = "recycle"
+	params["uid"] = "20180625180001001"
+	params["type"] = "buy"
 	params["arr"] = arrsX
 
 	request := make(map[string]interface{})
