@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.97
-//asset-exchange: exchange message ok.. start testing asset test chain.
+//Version v0.98
+//asset-state message ok.. start testing asset test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -195,15 +195,30 @@ func main() {
 		request["params"] = params
 	*/
 
-	//message 17: asset-exchange: exchange
+	/*
+		//message 17: asset-exchange: exchange
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		params["uid"] = "20180625191701001"
+		params["type"] = "exchange"
+		params["amount"] = 300000000
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-exchange"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+	//message 18: asset-state
+	var arrsX []interface{}
+	arrsX = append(arrsX, "userC")
+
 	params := make(map[string]interface{})
 	params["channel"] = "assettestchannel"
-	params["uid"] = "20180625191701001"
-	params["type"] = "exchange"
-	params["amount"] = 300000000
+	params["arr"] = arrsX
 
 	request := make(map[string]interface{})
-	request["method"] = "asset-exchange"
+	request["method"] = "asset-state"
 	request["id"] = 0
 	request["jsonrpc"] = "2.0"
 	request["params"] = params
