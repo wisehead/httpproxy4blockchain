@@ -20,8 +20,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.95
-//asset-exchange: xsb2mgb message ok.. start testing asset test chain.
+//Version v0.96
+//asset-exchange: mgb2xsb message ok.. start testing asset test chain.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")

@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.95
-//asset-exchange: xsb2mgb message ok.. start testing asset test chain.
+//Version v0.96
+//asset-exchange: mgb2xsb message ok.. start testing asset test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -154,17 +154,38 @@ func main() {
 		request["params"] = params
 	*/
 
-	//message 15: asset-exchange: xsb2mgb
+	/*
+		//message 15: asset-exchange: xsb2mgb
+		var arrsX []map[string]interface{}
+		arrItem1X := make(map[string]interface{})
+		arrItem1X["user"] = "userC"
+		arrItem1X["amount"] = 900000000
+		arrsX = append(arrsX, arrItem1X)
+
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		params["uid"] = "20180625182101001"
+		params["type"] = "xsb2mgb"
+		params["arr"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-exchange"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+
+	//message 16: asset-exchange: xsb2mgb
 	var arrsX []map[string]interface{}
 	arrItem1X := make(map[string]interface{})
 	arrItem1X["user"] = "userC"
-	arrItem1X["amount"] = 900000000
+	arrItem1X["amount"] = 1100000000
 	arrsX = append(arrsX, arrItem1X)
 
 	params := make(map[string]interface{})
 	params["channel"] = "assettestchannel"
-	params["uid"] = "20180625182101001"
-	params["type"] = "xsb2mgb"
+	params["uid"] = "20180625182601001"
+	params["type"] = "mgb2xsb"
 	params["arr"] = arrsX
 
 	request := make(map[string]interface{})
