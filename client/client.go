@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.98
-//asset-state message ok.. start testing asset test chain.
+//Version v0.99
+//asset-history message ok.. start testing asset test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -209,20 +209,33 @@ func main() {
 		request["jsonrpc"] = "2.0"
 		request["params"] = params
 	*/
-	//message 18: asset-state
-	var arrsX []interface{}
-	arrsX = append(arrsX, "userC")
+	/*
+		//message 18: asset-state
+		var arrsX []interface{}
+		arrsX = append(arrsX, "userC")
 
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		params["arr"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-state"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+	//message 19: asset-history
 	params := make(map[string]interface{})
 	params["channel"] = "assettestchannel"
-	params["arr"] = arrsX
+	params["user"] = "userC"
+	params["start"] = 0
+	params["count"] = 5000
 
 	request := make(map[string]interface{})
-	request["method"] = "asset-state"
+	request["method"] = "asset-history"
 	request["id"] = 0
 	request["jsonrpc"] = "2.0"
 	request["params"] = params
-
 	/*
 		//Message 6:source-state, suyuan test chain, package info
 		request := &RPCRequest{
