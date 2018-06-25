@@ -7,6 +7,7 @@ import (
 	"httpproxy4blockchain/jsonrpc"
 	"httpproxy4blockchain/logger"
 	"io/ioutil"
+	"strings"
 )
 
 //in this part, we try to decouple the whole code by a route-controller structure;
@@ -244,10 +245,51 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 	}
 
 	var rpcResp *jsonrpc.RPCResponse
-	if method == "source-transaction" {
-		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key, Tx_id: tx_id})
+	//B_chenhui
+	if strings.Contains(method, "asset") {
+		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "assettestchannel", Key: key})
 	} else {
-		rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key})
+		//E_chenhui
+		if method == "source-transaction" {
+			rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key, Tx_id: tx_id})
+		} else {
+			rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "notaryinfotestchannel", Key: key})
+		}
+	} //chenhui
+
+	if err != nil {
+		logger.Error("sendJsonrpcRequest() err for rpcClient.Call:", err.Error())
+		return nil, err
+	}
+	return rpcResp, nil
+}
+
+//B_chenhui
+//sendJsonrpcRequest is to send request to block chain service.
+func sendJsonrpcRequest4Asset(method string, message []byte) (*jsonrpc.RPCResponse, error) {
+	var rpcRequest jsonrpc.RPCRequest
+	err := json.Unmarshal(message, &rpcRequest)
+	if err != nil {
+		logger.Error("Excute() Unmarshal err,", err)
+		return nil, err
+	}
+
+	//rpcRequest := entermsg.Content
+	logger.Info("parsing the JSONRPC2.0 message from app client...")
+	f := rpcRequest.Params
+
+	//rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
+	rpcClient := jsonrpc.NewClient("https://testnet.ninechain.net/api/v2.1")
+	if rpcClient == nil {
+		logger.Error("sendJsonrpcRequest() pcClient is nil!")
+		return nil, err
+	}
+
+	var rpcResp *jsonrpc.RPCResponse
+	//B_chenhui
+	if strings.Contains(method, "asset") {
+		//rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "assettestchannel", Key: key})
+		rpcResp, err = rpcClient.Call(method, &f)
 	}
 
 	if err != nil {
@@ -256,6 +298,8 @@ func sendJsonrpcRequest(method string, key string, tx_id string) (*jsonrpc.RPCRe
 	}
 	return rpcResp, nil
 }
+
+//E_chenhui
 
 //verifyStateMsg is to parse and verify the format of source-state message.
 func verifyStateMsg(rpcResp *jsonrpc.RPCResponse) (bool, error) {
@@ -931,10 +975,14 @@ func Excute(message []byte) ([]byte, error) {
 
 	method := rpcRequest.Method
 	logger.Info("Excute() parsing Method:", method)
-
 	f := rpcRequest.Params
-	key := f.(map[string]interface{})["key"].(string)
-	logger.Info("Excute() rpcRequest.Params.Key:", key)
+	//B_chenhui
+	var key string
+	if strings.Contains(method, "source") {
+		key = f.(map[string]interface{})["key"].(string)
+		logger.Info("Excute() rpcRequest.Params.Key:", key)
+	}
+	//E_chenhui
 	channel := f.(map[string]interface{})["channel"].(string)
 	logger.Info("Excute() rpcRequest.Params.Channel:", channel)
 	var tx_id string
@@ -943,11 +991,22 @@ func Excute(message []byte) ([]byte, error) {
 		logger.Info("Excute() rpcRequest.Params.tx_id:", tx_id)
 	}
 
-	rpcResp, err := sendJsonrpcRequest(method, key, tx_id)
-	if err != nil {
-		logger.Error("Excute() sendJsonrpcRequest ,", err)
-		return nil, err
+	//B_chenhui
+	var rpcResp *jsonrpc.RPCResponse
+	if strings.Contains(method, "source") {
+		rpcResp, err = sendJsonrpcRequest(method, key, tx_id)
+		if err != nil {
+			logger.Error("Excute() sendJsonrpcRequest ,", err)
+			return nil, err
+		}
+	} else {
+		rpcResp, err = sendJsonrpcRequest4Asset(method, message)
+		if err != nil {
+			logger.Error("Excute() sendJsonrpcRequest4Asset ,", err)
+			return nil, err
+		}
 	}
+	//E_chenhui
 
 	respMsg, err := json.Marshal(rpcResp)
 	if err != nil {
@@ -963,57 +1022,60 @@ func Excute(message []byte) ([]byte, error) {
 		return nil, err
 	}
 	//B_chenhui
-	if len(key) == 21 {
-		respMsg, err = handle_suyuan_message(respMsg, 0, 0)
-		if err != nil {
-			logger.Error("Excute() handle_suyuan_message error::", err)
-			return nil, err
-		}
-		logger.Info("Excute() echo the message:", string(respMsg))
-	}
-	if len(key) == 31 {
-		var rpcRespState = new(RPCResponseState3)
-		err := json.Unmarshal(respMsg, &rpcRespState)
-		if err != nil {
-			logger.Error("Excute(): error.....")
-			return nil, err
-		}
+	if strings.Contains(method, "source") {
 
-		id := rpcRespState.ID
-		logger.Info("Excute() rpcRespState.id:", id)
-		jsonrpc := rpcRespState.JSONRPC
-		logger.Info("Excute() rpcRespState.jsonrpc:", jsonrpc)
-		rpcresult := rpcRespState.Result
-		//value := rpcresult.Value
-		logger.Info("Excute() rpcRespState.Result:", rpcresult)
+		if len(key) == 21 {
+			respMsg, err = handle_suyuan_message(respMsg, 0, 0)
+			if err != nil {
+				logger.Error("Excute() handle_suyuan_message error::", err)
+				return nil, err
+			}
+			logger.Info("Excute() echo the message:", string(respMsg))
+		}
+		if len(key) == 31 {
+			var rpcRespState = new(RPCResponseState3)
+			err := json.Unmarshal(respMsg, &rpcRespState)
+			if err != nil {
+				logger.Error("Excute(): error.....")
+				return nil, err
+			}
 
-		value2 := rpcresult.Value
-		logger.Info("Excute() stateRespMsg.Value:", value2)
-		readCountInfo := rpcresult.ReadCount
-		accesstime := readCountInfo.AccessTime
-		logger.Info("Excute() stateRespMsg.ReadCountInfo.AccessTime:", accesstime)
-		readcount := readCountInfo.ReadCount
-		logger.Info("Excute() stateRespMsg.ReadCountInfo.ReadCount:", readcount)
+			id := rpcRespState.ID
+			logger.Info("Excute() rpcRespState.id:", id)
+			jsonrpc := rpcRespState.JSONRPC
+			logger.Info("Excute() rpcRespState.jsonrpc:", jsonrpc)
+			rpcresult := rpcRespState.Result
+			//value := rpcresult.Value
+			logger.Info("Excute() rpcRespState.Result:", rpcresult)
 
-		batchKey := key[0:21]
-		logger.Info("Excute() batchKey is:", batchKey)
-		tx_id = ""
-		rpcResp, err = sendJsonrpcRequest(method, batchKey, tx_id)
-		if err != nil {
-			logger.Error("Excute() Marshal ,", err)
-			return nil, err
+			value2 := rpcresult.Value
+			logger.Info("Excute() stateRespMsg.Value:", value2)
+			readCountInfo := rpcresult.ReadCount
+			accesstime := readCountInfo.AccessTime
+			logger.Info("Excute() stateRespMsg.ReadCountInfo.AccessTime:", accesstime)
+			readcount := readCountInfo.ReadCount
+			logger.Info("Excute() stateRespMsg.ReadCountInfo.ReadCount:", readcount)
+
+			batchKey := key[0:21]
+			logger.Info("Excute() batchKey is:", batchKey)
+			tx_id = ""
+			rpcResp, err = sendJsonrpcRequest(method, batchKey, tx_id)
+			if err != nil {
+				logger.Error("Excute() Marshal ,", err)
+				return nil, err
+			}
+			respMsg, err = json.Marshal(rpcResp)
+			if err != nil {
+				logger.Error("Excute() Marshal ,", err)
+				return nil, err
+			}
+			respMsg, err = handle_suyuan_message(respMsg, readcount, accesstime)
+			if err != nil {
+				logger.Error("Excute() handle_suyuan_message error::", err)
+				return nil, err
+			}
+			logger.Info("Excute() echo the message:", string(respMsg))
 		}
-		respMsg, err = json.Marshal(rpcResp)
-		if err != nil {
-			logger.Error("Excute() Marshal ,", err)
-			return nil, err
-		}
-		respMsg, err = handle_suyuan_message(respMsg, readcount, accesstime)
-		if err != nil {
-			logger.Error("Excute() handle_suyuan_message error::", err)
-			return nil, err
-		}
-		logger.Info("Excute() echo the message:", string(respMsg))
 	}
 	//E_chenhui
 	return respMsg, nil

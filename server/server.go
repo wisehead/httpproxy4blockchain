@@ -15,12 +15,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.86
-//package info readcount ok.
+//Version v0.91
+//asset-mine message ok.. start testing asset test chain.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
@@ -42,8 +43,12 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	logger.Info("xxx rpcRequest.Method:", method)
 
 	f := rpcRequest.Params
-	key := f.(map[string]interface{})["key"].(string)
-	logger.Info("rpcRequest.Params.Key:", key)
+	//B_chenhui
+	if strings.Contains(method, "source") {
+		key := f.(map[string]interface{})["key"].(string)
+		logger.Info("rpcRequest.Params.Key:", key)
+	}
+	//E_chenhui
 	channel := f.(map[string]interface{})["channel"].(string)
 	logger.Info("rpcRequest.Params.Channel:", channel)
 	rpcResp, err := handler.Excute(postdata)

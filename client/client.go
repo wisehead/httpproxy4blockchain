@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v0.86
-//package info readcount ok.
+//Version v0.91
+//asset-mine message ok.. start testing asset test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -65,16 +65,69 @@ func main() {
 		}
 	}()
 
-	//Message 6:source-state, suyuan test chain, package info
-	request := &RPCRequest{
-		Method: "source-state",
-		Params: map[string]interface{}{
-			"key":     "1130102150229180616010000000005",
-			"channel": "notaryinfotestchannel",
-		},
-		ID:      0,
-		JSONRPC: "2.0",
-	}
+	//Message 11:asset-mine, asset test chain.
+	/*
+				{
+				    "params": {
+				        "channel": "assettestchannel",
+				        "uid": "20180623112615001",
+				        "arr": [
+				            {
+				                "user": "userA",
+				                "amount": 101000000
+				            },
+				            {
+				                "user": "userB",
+				                "amount": 1010000000
+				            }
+				        ]
+				    },
+				    "jsonrpc": "2.0",
+				    "id": 0,
+				    "method": "asset-mine"
+				}
+
+			type RPCRequest struct {
+			Method  string      `json:"method"`
+			Params  interface{} `json:"params,omitempty"`
+			ID      uint        `json:"id"` //chenhui
+			JSONRPC string      `json:"jsonrpc"`
+		}
+	*/
+	var arrsX []map[string]interface{}
+	arrItem1X := make(map[string]interface{})
+	arrItem1X["user"] = "userC"
+	arrItem1X["amount"] = 1000000000000
+	arrsX = append(arrsX, arrItem1X)
+
+	arrItem2X := make(map[string]interface{})
+	arrItem2X["user"] = "userD"
+	arrItem2X["amount"] = 2000000000000
+	arrsX = append(arrsX, arrItem2X)
+
+	params := make(map[string]interface{})
+	params["channel"] = "assettestchannel"
+	params["uid"] = "20180625155401001"
+	params["arr"] = arrsX
+
+	request := make(map[string]interface{})
+	request["method"] = "asset-mine"
+	request["id"] = 0
+	request["jsonrpc"] = "2.0"
+	request["params"] = params
+
+	/*
+		//Message 6:source-state, suyuan test chain, package info
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				"key":     "1130102150229180616010000000005",
+				"channel": "notaryinfotestchannel",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 
 	/*
 		//Message 5:source-state, suyuan test chain, batch info
