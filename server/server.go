@@ -20,8 +20,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.01
-//asset-uid message ok.. start testing asset test chain.
+//Version v1.02
+//add random nonce.. suyuan test chain.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
@@ -38,9 +38,9 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	}
 
 	jsonrpc := rpcRequest.JSONRPC
-	logger.Info("xxx rpcRequest.jsonrpc:", jsonrpc)
+	logger.Info("handleMsg() rpcRequest.jsonrpc:", jsonrpc)
 	method := rpcRequest.Method
-	logger.Info("xxx rpcRequest.Method:", method)
+	logger.Info("handleMsg() rpcRequest.Method:", method)
 
 	f := rpcRequest.Params
 	//B_chenhui
@@ -50,7 +50,7 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	}
 	//E_chenhui
 	channel := f.(map[string]interface{})["channel"].(string)
-	logger.Info("rpcRequest.Params.Channel:", channel)
+	logger.Info("handleMsg() rpcRequest.Params.Channel:", channel)
 	rpcResp, err := handler.Excute(postdata)
 
 	//chenhui

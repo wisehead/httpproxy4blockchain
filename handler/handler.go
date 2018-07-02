@@ -270,7 +270,7 @@ func sendJsonrpcRequest4Asset(method string, message []byte) (*jsonrpc.RPCRespon
 	var rpcRequest jsonrpc.RPCRequest
 	err := json.Unmarshal(message, &rpcRequest)
 	if err != nil {
-		logger.Error("Excute() Unmarshal err,", err)
+		logger.Error("sendJsonrpcRequest4Asset() Unmarshal err,", err)
 		return nil, err
 	}
 
@@ -281,7 +281,7 @@ func sendJsonrpcRequest4Asset(method string, message []byte) (*jsonrpc.RPCRespon
 	//rpcClient := jsonrpc.NewClient("https://www.ninechain.net/api/v2.1")
 	rpcClient := jsonrpc.NewClient("https://testnet.ninechain.net/api/v2.1")
 	if rpcClient == nil {
-		logger.Error("sendJsonrpcRequest() pcClient is nil!")
+		logger.Error("sendJsonrpcRequest4Asset() pcClient is nil!")
 		return nil, err
 	}
 
@@ -293,7 +293,7 @@ func sendJsonrpcRequest4Asset(method string, message []byte) (*jsonrpc.RPCRespon
 	}
 
 	if err != nil {
-		logger.Error("sendJsonrpcRequest() err for rpcClient.Call:", err.Error())
+		logger.Error("sendJsonrpcRequest4Asset() err for rpcClient.Call:", err.Error())
 		return nil, err
 	}
 	return rpcResp, nil

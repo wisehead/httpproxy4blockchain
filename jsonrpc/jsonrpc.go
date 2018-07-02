@@ -10,9 +10,11 @@ import (
 	"fmt"
 	"httpproxy4blockchain/logger"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 const (
@@ -210,6 +212,35 @@ func NewClientWithOpts(endpoint string, opts *RPCClientOpts) RPCClient {
 	return rpcClient
 }
 
+//B_chenhui
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const (
+	letterIdxBits = 6                    // 6 bits to represent a letter index
+	letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
+	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
+)
+
+var src = rand.NewSource(time.Now().UnixNano())
+
+func RandStringBytesMaskImprSrc(n int) string {
+	b := make([]byte, n)
+	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
+	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
+		if remain == 0 {
+			cache, remain = src.Int63(), letterIdxMax
+		}
+		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
+			b[i] = letterBytes[idx]
+			i--
+		}
+		cache >>= letterIdxBits
+		remain--
+	}
+
+	return string(b)
+}
+
+//E_chenhui
 //--
 func (client *rpcClient) Call(method string, params ...interface{}) (*RPCResponse, error) {
 	/*
@@ -232,8 +263,11 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 	str := strconv.Quote(string(body))
 	logger.Info("Call() str:" + str)
 
+	nonce := RandStringBytesMaskImprSrc(32)
+
 	//data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540659"
-	data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540600"
+	//data_orig := "md5" + string(body) + "R8n9eO3SVDTYbQrkZMw75vLisxBdNo6l" + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540600"
+	data_orig := "md5" + string(body) + nonce + "3072c26dedb17d5545e53099fced54d30e13ad7f98a0ca542a73549535540600"
 	logger.Info("Call() :data_orig is: ", data_orig)
 
 	h := md5.New()
@@ -247,6 +281,7 @@ func (client *rpcClient) Call(method string, params ...interface{}) (*RPCRespons
 		Alg:   "md5",
 		Sign:  hex.EncodeToString(cipherStr),
 	}
+	bcRequest.Nonce = nonce //chenhui
 	return client.doCall(bcRequest, method)
 }
 

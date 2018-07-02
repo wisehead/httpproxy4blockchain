@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.01
-//asset-uid message ok.. start testing asset test chain.
+//Version v1.02
+//add random nonce.. suyuan test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -252,33 +252,34 @@ func main() {
 		request["jsonrpc"] = "2.0"
 		request["params"] = params
 	*/
-	//message 21: asset-uid
-	var arrsX []interface{}
-	arrsX = append(arrsX, "userC")
-
-	params := make(map[string]interface{})
-	params["channel"] = "assettestchannel"
-	params["type"] = "all"
-	params["uid"] = "20180625180001001"
-	params["arr"] = arrsX
-
-	request := make(map[string]interface{})
-	request["method"] = "asset-uid"
-	request["id"] = 0
-	request["jsonrpc"] = "2.0"
-	request["params"] = params
 	/*
-		//Message 6:source-state, suyuan test chain, package info
-		request := &RPCRequest{
-			Method: "source-state",
-			Params: map[string]interface{}{
-				"key":     "1130102150229180616010000000005",
-				"channel": "notaryinfotestchannel",
-			},
-			ID:      0,
-			JSONRPC: "2.0",
-		}
+		//message 21: asset-uid
+		var arrsX []interface{}
+		arrsX = append(arrsX, "userC")
+
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		params["type"] = "all"
+		params["uid"] = "20180625180001001"
+		params["arr"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-uid"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
 	*/
+
+	//Message 6:source-state, suyuan test chain, package info
+	request := &RPCRequest{
+		Method: "source-state",
+		Params: map[string]interface{}{
+			"key":     "1130102150229180616010000000005",
+			"channel": "notaryinfotestchannel",
+		},
+		ID:      0,
+		JSONRPC: "2.0",
+	}
 
 	/*
 		//Message 5:source-state, suyuan test chain, batch info
