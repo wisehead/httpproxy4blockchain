@@ -20,8 +20,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.03
-//add location info, taste score and don't send base64 of pics.. suyuan test chain.
+//Version v1.04
+//support source-insert-batch message.. suyuan test chain.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")
@@ -45,8 +45,12 @@ func handleMsg(c *websocket.Conn, messageType int, postdata []byte) error {
 	f := rpcRequest.Params
 	//B_chenhui
 	if strings.Contains(method, "source") {
-		key := f.(map[string]interface{})["key"].(string)
-		logger.Info("rpcRequest.Params.Key:", key)
+		if strings.Contains(method, "source-insert-batch") {
+			//do nothing
+		} else {
+			key := f.(map[string]interface{})["key"].(string)
+			logger.Info("rpcRequest.Params.Key:", key)
+		}
 	}
 	//E_chenhui
 	channel := f.(map[string]interface{})["channel"].(string)

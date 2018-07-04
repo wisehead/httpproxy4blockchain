@@ -284,7 +284,7 @@ func sendJsonrpcRequest4Asset(method string, message []byte) (*jsonrpc.RPCRespon
 
 	var rpcResp *jsonrpc.RPCResponse
 	//B_chenhui
-	if strings.Contains(method, "asset") {
+	if strings.Contains(method, "asset") || strings.Contains(method, "source-insert-batch") {
 		//rpcResp, err = rpcClient.Call(method, &MethodParams{Channel: "assettestchannel", Key: key})
 		rpcResp, err = rpcClient.Call(method, &f)
 	}
@@ -710,7 +710,7 @@ func handle_suyuan_message(respMsg []byte, readcount uint64, accesstime uint64) 
 	//2.BiologicalOrganicFertilizer
 
 	//3.OrganicCertificationOfBase
-	url_prefix := "/home/mengchun/go/src/httpproxy4blockchain"
+	url_prefix := "/home/mengchun/go/src/httpproxy4blockchain/"
 	organicCertificationOfBase := stateRespMsg.OrganicCertificationOfBase
 	pic1 := organicCertificationOfBase.PictureName
 	logger.Info("handle_suyuan_message() rpcRespState.OrganicCertificationOfBase.PictureName:", pic1)
@@ -1029,7 +1029,7 @@ func Excute(message []byte) ([]byte, error) {
 	f := rpcRequest.Params
 	//B_chenhui
 	var key string
-	if strings.Contains(method, "source") {
+	if strings.Contains(method, "source") && !strings.Contains(method, "source-insert-batch") {
 		key = f.(map[string]interface{})["key"].(string)
 		logger.Info("Excute() rpcRequest.Params.Key:", key)
 	}
@@ -1044,7 +1044,7 @@ func Excute(message []byte) ([]byte, error) {
 
 	//B_chenhui
 	var rpcResp *jsonrpc.RPCResponse
-	if strings.Contains(method, "source") {
+	if strings.Contains(method, "source") && !strings.Contains(method, "source-insert-batch") {
 		rpcResp, err = sendJsonrpcRequest(method, key, tx_id)
 		if err != nil {
 			logger.Error("Excute() sendJsonrpcRequest ,", err)

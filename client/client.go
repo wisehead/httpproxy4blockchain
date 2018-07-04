@@ -9,17 +9,19 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.03
-//add location info, taste score and don't send base64 of pics.. suyuan test chain.
+//Version v1.04
+//support source-insert-batch message.. suyuan test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -294,18 +296,152 @@ func main() {
 		request["params"] = params
 	*/
 
-	//Message 6:source-state, suyuan test chain, package info
-
-	request := &RPCRequest{
-		Method: "source-state",
-		Params: map[string]interface{}{
-			"key":     "1130102150229180616010000000005",
-			"channel": "notaryinfotestchannel",
-		},
-		ID:      0,
-		JSONRPC: "2.0",
+	/**************   source chain test message       ***************/
+	//Message 11: source-insert-batch, suyuan test chain
+	//Message 8: source-insert-batch, suyuan test chain
+	var arrsX []map[string]interface{}
+	for a := 7; a < 10; a++ {
+		fmt.Printf("a 的值为: %d\n", a)
+		mykey := "113010215022918061601000000000" + strconv.Itoa(a)
+		fmt.Printf("mykey 的值为: %s\n", mykey)
+		arrItem1X := make(map[string]interface{})
+		arrItem1X["key"] = mykey
+		arrItem1X["value"] = mykey
+		metaX := make(map[string]interface{})
+		metaX["readcount"] = 1
+		arrItem1X["meta"] = metaX
+		arrsX = append(arrsX, arrItem1X)
 	}
 
+	params := make(map[string]interface{})
+	params["channel"] = "notaryinfotestchannel"
+	params["records"] = arrsX
+
+	request := make(map[string]interface{})
+	request["method"] = "source-insert-batch"
+	request["id"] = 0
+	request["jsonrpc"] = "2.0"
+	request["params"] = params
+
+	//Message 10: source-insert-batch, suyuan test chain
+	/*
+		var arrsX []map[string]interface{}
+		for a := 9000; a < 10000; a++ {
+			fmt.Printf("a 的值为: %d\n", a)
+			mykey := "113010215022918061601000000" + strconv.Itoa(a)
+			fmt.Printf("mykey 的值为: %s\n", mykey)
+			arrItem1X := make(map[string]interface{})
+			arrItem1X["key"] = mykey
+			arrItem1X["value"] = mykey
+			metaX := make(map[string]interface{})
+			metaX["readcount"] = 1
+			arrItem1X["meta"] = metaX
+			arrsX = append(arrsX, arrItem1X)
+		}
+
+		params := make(map[string]interface{})
+		params["channel"] = "notaryinfotestchannel"
+		params["records"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "source-insert-batch"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+
+	/*
+		//Message 9: source-insert-batch, suyuan test chain
+		var arrsX []map[string]interface{}
+		for a := 100; a < 1000; a++ {
+			fmt.Printf("a 的值为: %d\n", a)
+			mykey := "1130102150229180616010000000" + strconv.Itoa(a)
+			fmt.Printf("mykey 的值为: %s\n", mykey)
+			arrItem1X := make(map[string]interface{})
+			arrItem1X["key"] = mykey
+			arrItem1X["value"] = mykey
+			metaX := make(map[string]interface{})
+			metaX["readcount"] = 1
+			arrItem1X["meta"] = metaX
+			arrsX = append(arrsX, arrItem1X)
+		}
+
+		params := make(map[string]interface{})
+		params["channel"] = "notaryinfotestchannel"
+		params["records"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "source-insert-batch"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+
+	/*
+		//Message 8: source-insert-batch, suyuan test chain
+		var arrsX []map[string]interface{}
+		for a := 10; a < 100; a++ {
+			fmt.Printf("a 的值为: %d\n", a)
+			mykey := "11301021502291806160100000000" + strconv.Itoa(a)
+			fmt.Printf("mykey 的值为: %s\n", mykey)
+			arrItem1X := make(map[string]interface{})
+			arrItem1X["key"] = mykey
+			arrItem1X["value"] = mykey
+			metaX := make(map[string]interface{})
+			metaX["readcount"] = 1
+			arrItem1X["meta"] = metaX
+			arrsX = append(arrsX, arrItem1X)
+		}
+
+		params := make(map[string]interface{})
+		params["channel"] = "notaryinfotestchannel"
+		params["records"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "source-insert-batch"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+	/*
+		//Message 7: source-insert-batch, suyuan test chain
+		var arrsX []map[string]interface{}
+		for a := 10; a < 99; a++ {
+			fmt.Printf("a 的值为: %d\n", a)
+			arrItem1X := make(map[string]interface{})
+			arrItem1X["key"] = strconv.Itoa(a)
+			arrItem1X["value"] = strconv.Itoa(a)
+			metaX := make(map[string]interface{})
+			metaX["readcount"] = 1
+			arrItem1X["meta"] = metaX
+			arrsX = append(arrsX, arrItem1X)
+		}
+
+		params := make(map[string]interface{})
+		params["channel"] = "notaryinfotestchannel"
+		params["records"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "source-insert-batch"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
+
+	//Message 6:source-state, suyuan test chain, package info
+	/*
+		request := &RPCRequest{
+			Method: "source-state",
+			Params: map[string]interface{}{
+				//"key":     "1130102150229180616010000000111",
+				//"key":     "98",
+				"key":     "1130102150229180616010000000100",
+				"channel": "notaryinfotestchannel",
+			},
+			ID:      0,
+			JSONRPC: "2.0",
+		}
+	*/
 	/*
 		//Message 5:source-state, suyuan test chain, batch info
 		request := &RPCRequest{
@@ -1083,6 +1219,7 @@ func main() {
 	//testRecord, _ := json.Marshal(batchInformation)
 	//log.Println("oneRecord is:", string(testRecord))
 	message, _ := json.Marshal(request)
+	//log.Println("request is:", string(message))
 	//err = c.WriteMessage(websocket.TextMessage, []byte(message.String()))
 	err = c.WriteMessage(websocket.TextMessage, []byte(message))
 	if err != nil {
