@@ -10,6 +10,7 @@ type BatchInformationType struct {
 	BatchOutput                             string                                      `json:"batchOutput"`
 	ReadCount                               uint64                                      `json:"readCount"`
 	AccessTime                              uint64                                      `json:"accessTime"`
+	TasteScore                              string                                      `json:"tasteScore"`
 	SeedInfo                                SeedInfoType                                `json:"seedInfo"`                                //一、种子信息：
 	BiologicalOrganicFertilizer             BiologicalOrganicFertilizerType             `json:"biologicalOrganicFertilizer"`             //二、生物有机肥
 	OrganicCertificationOfBase              OrganicCertificationOfBaseType              `json:"organicCertificationOfBase"`              //三、基地有机认证
@@ -156,9 +157,9 @@ type DetectionReportOfEmbryoRateAndIntegrityType struct {
 
 /*七、位置信息*/
 type PositionInformationType struct {
-	Picture1PlantingBaseLocation   string `json:"picture1PlantingBaseLocation"`   //种植基地
-	Picture2StorageBaseLocation    string `json:"picture2StorageBaseLocation"`    //仓储基地
-	Picture3ProcessingBaseLocation string `json:"picture3ProcessingBaseLocation"` //加工基地
+	Position1PlantingBaseLocation   string `json:"position1PlantingBaseLocation"`   //种植基地
+	Position2StorageBaseLocation    string `json:"position2StorageBaseLocation"`    //仓储基地
+	Position3ProcessingBaseLocation string `json:"position3ProcessingBaseLocation"` //加工基地
 }
 
 /*八、产品出厂检测报告*/

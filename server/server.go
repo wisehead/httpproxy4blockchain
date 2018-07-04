@@ -20,8 +20,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.02
-//add random nonce.. suyuan test chain.
+//Version v1.03
+//add location info, taste score and don't send base64 of pics.. suyuan test chain.
 
 //var addr = flag.String("addr", "localhost:8080", "http service address")
 var addr = flag.String("addr", "127.0.0.1:8088", "http service address")

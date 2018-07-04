@@ -18,8 +18,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Version v1.02
-//add random nonce.. suyuan test chain.
+//Version v1.03
+//add location info, taste score and don't send base64 of pics.. suyuan test chain.
 
 // RPCRequest represents a JSON-RPC request object.
 type RPCRequest struct {
@@ -69,18 +69,19 @@ func main() {
 	/*
 		var arrsX []map[string]interface{}
 		arrItem1X := make(map[string]interface{})
-		arrItem1X["user"] = "userC"
+		arrItem1X["user"] = "userE"
 		arrItem1X["amount"] = 1000000000000
 		arrsX = append(arrsX, arrItem1X)
 
 		arrItem2X := make(map[string]interface{})
-		arrItem2X["user"] = "userD"
+		arrItem2X["user"] = "userF"
 		arrItem2X["amount"] = 2000000000000
 		arrsX = append(arrsX, arrItem2X)
 
 		params := make(map[string]interface{})
 		params["channel"] = "assettestchannel"
-		params["uid"] = "20180625155401001"
+		//params["uid"] = "20180625155401001"
+		params["uid"] = "20180703190701001"
 		params["arr"] = arrsX
 
 		request := make(map[string]interface{})
@@ -89,7 +90,30 @@ func main() {
 		request["jsonrpc"] = "2.0"
 		request["params"] = params
 	*/
+	/*
+		var arrsX []map[string]interface{}
+		arrItem1X := make(map[string]interface{})
+		arrItem1X["user"] = "userE"
+		arrItem1X["amount"] = "1000000000000"
+		arrsX = append(arrsX, arrItem1X)
 
+		arrItem2X := make(map[string]interface{})
+		arrItem2X["user"] = "userF"
+		arrItem2X["amount"] = "2000000000000"
+		arrsX = append(arrsX, arrItem2X)
+
+		params := make(map[string]interface{})
+		params["channel"] = "assettestchannel"
+		//params["uid"] = "20180625155401001"
+		params["uid"] = "20180703190701001"
+		params["arr"] = arrsX
+
+		request := make(map[string]interface{})
+		request["method"] = "asset-mine"
+		request["id"] = 0
+		request["jsonrpc"] = "2.0"
+		request["params"] = params
+	*/
 	//message 12: asset-transfer: recycle
 	/*
 		var arrsX []map[string]interface{}
@@ -271,6 +295,7 @@ func main() {
 	*/
 
 	//Message 6:source-state, suyuan test chain, package info
+
 	request := &RPCRequest{
 		Method: "source-state",
 		Params: map[string]interface{}{
